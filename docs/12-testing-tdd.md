@@ -53,7 +53,7 @@ Two runtime traps, both hit while building this:
 - **Sinon comes from the UI5 runtime**: `sap/ui/thirdparty/sinon-4` - and its UMD wrapper registers with the UI5 loader, so require it through the loader; `window.sinon` does not exist.
 - **Sinon 4 has no top-level `restore`** (that arrived in sinon 5): use `sinon.createSandbox()` per test and `sandbox.restore()` in `afterEach`, otherwise you get `Attempted to wrap ... which is already wrapped` on the second test.
 
-Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first), example 04 add-product flow (controller + sinon). Next candidates: OPA5 integration tests that drive whole flows in the real UI.
+Covered today: example 02 (greeting controller test), example 03 (formatters + email validator), example 04 (formatters, add-product controller + OPA5 dialog flow), example 05 (extracted formatters + 3 navigation journeys), example 06 (formatters + selection/$expand journey), example 07 (leave-request validation + create journey), example 08 (formatter characterization). Next candidates: OPA5 journeys for the remaining UIs, OPA5 for example 09 (Fiori Elements), controller tests with more interaction coverage.
 
 ## OPA5: flow tests against the real app
 
