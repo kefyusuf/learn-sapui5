@@ -98,7 +98,7 @@ function stopServer(child) {
 	if (process.platform === "win32") {
 		try { execSync(`taskkill /pid ${child.pid} /T /F`, { stdio: "ignore" }); } catch { /* already gone */ }
 	} else {
-		child.kill("SIGTERM");
+		try { process.kill(-child.pid, "SIGTERM"); } catch { child.kill("SIGTERM"); }
 	}
 }
 
@@ -115,7 +115,10 @@ for (const t of targets) {
 	console.log(`- ${t.prefix} ${t.dir}: starting ui5 serve on port ${t.port}...`);
 	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
 	const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
-		cwd, stdio: "ignore", shell: process.platform === "win32"
+		cwd, stdio: "ignore", shell: process.platform === "win32",
+		// On Linux the child becomes a group leader so stopServer can kill
+		// the whole tree (npx -> ui5 -> ...) with one signal.
+		detached: process.platform !== "win32"
 	});
 
 	try {

@@ -55,6 +55,10 @@ Two runtime traps, both hit while building this:
 
 Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first), example 04 add-product flow (controller + sinon). Next candidates: OPA5 integration tests that drive whole flows in the real UI.
 
+## CI
+
+`.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.
+
 ## Git workflow: branch → commit → PR
 
 ```bash
