@@ -35,7 +35,7 @@
 		</content>
 		<buttons>
 			<Button text="{i18n>dialog.cancel}" press="onCancelRequest" />
-			<Button text="{i18n>dialog.submit}" type="Emphasized" press="onSubmitRequest" />
+			<Button id="dialogSubmit" text="{i18n>dialog.submit}" type="Emphasized" press="onSubmitRequest" />
 		</buttons>
 	</Dialog>
 </core:FragmentDefinition>

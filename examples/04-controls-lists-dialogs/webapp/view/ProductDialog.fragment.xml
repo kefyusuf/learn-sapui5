@@ -17,7 +17,7 @@
 		</content>
 		<buttons>
 			<Button text="{i18n>add.cancel}" press="onCancelProduct" />
-			<Button text="{i18n>add.save}" type="Emphasized" press="onSaveProduct" />
+			<Button id="dialogSave" text="{i18n>add.save}" type="Emphasized" press="onSaveProduct" />
 		</buttons>
 	</Dialog>
 </core:FragmentDefinition>

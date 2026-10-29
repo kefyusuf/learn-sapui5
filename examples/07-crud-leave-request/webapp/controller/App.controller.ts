@@ -52,10 +52,12 @@ export default class AppController extends Controller {
 	}
 
 	public async onNewRequest(): Promise<void> {
+		// controller: this connects the fragment's press handlers (M16).
 		if (!this.oDialog) {
 			this.oDialog = (await Fragment.load({
 				name: "learn.crud.view.LeaveRequestDialog",
-				id: this.getView()?.getId()
+				id: this.getView()?.getId(),
+				controller: this
 			})) as Dialog;
 			this.getView()?.addDependent(this.oDialog);
 		}

@@ -327,6 +327,32 @@ The XML parser treats the bare `&` as the start of an entity reference and the v
 
 ---
 
+## M16 - `Fragment.load` without `controller`: dialog buttons are dead
+
+**Symptom:** the dialog opens, its inputs work, but the Save/Cancel buttons do absolutely nothing - no handler fires, no console error. `firePress()` on the button changes nothing either. Unit tests that call the controller method directly stay green, so nothing catches it.
+
+**Cause:** `Fragment.load` without a `controller` option. An XML fragment has no controller of its own; its event handlers (`press="onSaveProduct"`) are only wired when the controller is passed explicitly.
+
+**Wrong:**
+```ts
+this.oDialog = await Fragment.load({
+    name: "learn.controls.view.ProductDialog",
+    id: this.getView()?.getId()
+}) as Dialog;
+```
+**Fixed:**
+```ts
+this.oDialog = await Fragment.load({
+    name: "learn.controls.view.ProductDialog",
+    id: this.getView()?.getId(),
+    controller: this
+}) as Dialog;
+```
+
+**Lesson:** every dialog fragment loaded via `Fragment.load` needs `controller: this`. This shipped in examples 04 and 07 of this repo (both dialogs completely dead) and was only caught when OPA5 journeys tried to click the buttons. Related: M06 (fragment without `addDependent` has no models).
+
+---
+
 ## Quick reference: error → mistake
 
 | Error fragment | Mistake |
@@ -336,6 +362,7 @@ The XML parser treats the bare `&` as the start of an entity reference and the v
 | literal `appTitle` in UI | M04 |
 | handler not found on click | M05 |
 | dialog undefined / without models | M06 |
+| **dialog buttons dead, no error** | **M16** |
 | empty nav binding / nested path | M07 |
 | `initial loading of metadata failed` | M08, M12 |
 | UI shows old data after save | M09 |

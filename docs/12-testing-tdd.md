@@ -65,7 +65,15 @@ Covered today: example 03 (formatters + email validator), example 07 (leave-requ
 4. With `Opa5.extendConfig({ viewNamespace: "learn.databinding.view." })`, `waitFor({ viewName: "App" })` uses the **short name** - the full name gets double-prefixed and matches nothing (silent 20s timeout).
 5. OPA5 waits in **real time** - virtual-time-budget runners expire before the app boots; the CDP polling runner exists for exactly this reason.
 
-The example 03 journey found **M15** on its first run: the save button it was supposed to click did not exist because a raw `&&` truncated the view.
+The example 03 journey found **M15** on its first run: the save button it was supposed to click did not exist because a raw `&&` truncated the view. The example 04 and 07 journeys found **M16** the same way: `Fragment.load` without `controller: this` left every dialog button dead.
+
+### OPA5 rollout lessons (examples 04/07)
+
+- **A closing dialog is async** - after pressing save, the handler runs a round trip before `close()`. Assert with a **`check` function that polls** (`check: oDialog => oDialog.isOpen() === bOpen`), never a one-shot `success` assertion.
+- **A closed dialog has no DOM** - with the default `visible: true` OPA waits for a rendered control that will never come back. Set `visible: false` when asserting state (`isOpen`) instead of visibility.
+- **DatePickers/Selects wrap an inner input** - target it with `new EnterText({ text, idSuffix: "inner" })`.
+- **No `.and()` chaining inside page objects** - `this.waitFor(...).and(...)` is journey-syntax only; use two page methods and chain in the journey.
+- **OData apps: start the mock server in `allJourneys.js`** before the journeys - an OPA page does not run the app's `index.html` boot chain (docs/09, M08).
 
 ## CI
 

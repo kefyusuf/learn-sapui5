@@ -82,10 +82,13 @@ export default class AppController extends Controller {
 
 	public async onAddProduct(): Promise<void> {
 		// Fragments are loaded once and reused; we remember the instance.
+		// controller: this connects the fragment's press handlers - without
+		// it the dialog buttons are dead (docs/09, M16).
 		if (!this.oDialog) {
 			this.oDialog = (await Fragment.load({
 				name: "learn.controls.view.ProductDialog",
-				id: this.getView()?.getId()
+				id: this.getView()?.getId(),
+				controller: this
 			})) as Dialog;
 			this.getView()?.addDependent(this.oDialog);
 		}
