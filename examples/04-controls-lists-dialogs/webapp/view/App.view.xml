@@ -1,0 +1,48 @@
+	<mvc:View controllerName="learn.controls.controller.App"
+			  displayBlock="true"
+			  xmlns="sap.m"
+			  xmlns:core="sap.ui.core"
+			  xmlns:mvc="sap.ui.core.mvc">
+
+	<Page id="page" title="{i18n>appTitle}">
+		<subHeader>
+			<Toolbar>
+				<SearchField id="searchField"
+							 placeholder="{i18n>search.placeholder}"
+							 liveChange="onSearch"
+							 width="100%" />
+			</Toolbar>
+		</subHeader>
+		<content>
+			<List id="productList"
+				  headerText="{i18n>catalog.title}"
+				  items="{/products}"
+				  noDataText="No products match your search"
+				  growing="true"
+				  growingThreshold="6">
+				<items>
+					<ObjectListItem title="{name}"
+									number="{path: 'price', formatter: '.formatPrice'}"
+									numberUnit="EUR"
+									type="Active"
+									press="onProductPressed">
+						<attributes>
+							<ObjectAttribute text="{category}" />
+						</attributes>
+						<firstStatus>
+							<ObjectStatus text="{path: 'stock', formatter: '.formatStock'}"
+										  state="{path: 'stock', formatter: '.formatStockState'}" />
+						</firstStatus>
+					</ObjectListItem>
+				</items>
+			</List>
+		</content>
+		<footer>
+			<Toolbar>
+				<ToolbarSpacer />
+				<Button text="{i18n>add}" type="Emphasized" press="onAddProduct" icon="sap-icon://add" />
+			</Toolbar>
+		</footer>
+	</Page>
+
+</mvc:View>

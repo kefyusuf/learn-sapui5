@@ -1,0 +1,18 @@
+/* The height chain: html -> body -> ComponentContainer -> XML view -> Page.
+   Without it the app collapses to content height (docs/09, M13). */
+html, body {
+	height: 100%;
+}
+
+.sapUiComponentContainer .sapUiView {
+	height: 100%;
+}
+
+/* Example 02: a simple "card" look for the welcome panel */
+.employeeCard {
+	background: #ffffff;
+	border-radius: 0.5rem;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+	min-width: 24rem;
+	align-items: center;
+}

@@ -1,0 +1,23 @@
+<mvc:View controllerName="learn.routing.controller.Master"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<Page id="masterPage" title="{i18n>master.title}" showNavButton="false">
+		<content>
+			<List id="orderList"
+				  items="{/orders}"
+				  mode="SingleSelectMaster"
+				  selectionChange="onOrderSelected"
+				  growing="true">
+				<items>
+					<StandardListItem title="{id}"
+									  description="{customer}"
+									  info="{status}"
+									  infoState="{path: 'status', formatter: '.formatStatus'}"
+									  wrapping="true" />
+				</items>
+			</List>
+		</content>
+	</Page>
+
+</mvc:View>

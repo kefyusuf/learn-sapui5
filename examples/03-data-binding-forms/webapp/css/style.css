@@ -1,0 +1,15 @@
+/* The height chain: html -> body -> ComponentContainer -> XML view -> Page. */
+html, body {
+	height: 100%;
+}
+
+.sapUiComponentContainer .sapUiView {
+	height: 100%;
+}
+
+.summaryBar {
+	background: #f0f6fb;
+	border-left: 4px solid #0a6ed1;
+	padding: 0.5rem 1rem;
+	margin-bottom: 1rem;
+}

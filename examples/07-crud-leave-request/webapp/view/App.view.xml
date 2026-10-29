@@ -1,0 +1,51 @@
+<mvc:View controllerName="learn.crud.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc"
+		  xmlns:core="sap.ui.core">
+
+	<Page id="page" title="{i18n>appTitle}">
+		<content>
+			<Table id="requestsTable"
+				   items="{path: '/LeaveRequestSet'}"
+				   growing="true"
+				   mode="SingleSelectMaster">
+				<headerToolbar>
+					<Toolbar>
+						<Title text="{i18n>list.title}" level="H4" />
+						<ToolbarSpacer />
+						<Button text="{i18n>delete}" icon="sap-icon://delete" press="onDeleteRequest" type="Transparent" />
+						<Button text="{i18n>new}" icon="sap-icon://add" press="onNewRequest" type="Emphasized" />
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column width="6rem"><header><Text text="{i18n>column.id}" /></header></Column>
+					<Column><header><Text text="{i18n>label.employee}" /></header></Column>
+					<Column width="6rem"><header><Text text="{i18n>column.type}" /></header></Column>
+					<Column width="11rem"><header><Text text="{i18n>column.dates}" /></header></Column>
+					<Column width="4rem" hAlign="End"><header><Text text="{i18n>column.days}" /></header></Column>
+					<Column width="6rem"><header><Text text="{i18n>column.status}" /></header></Column>
+				</columns>
+				<items>
+					<ColumnListItem vAlign="Middle">
+						<cells>
+							<Text text="{ID}" />
+							<Text text="{Employee}" />
+							<Text text="{Type}" />
+							<Text text="{
+								parts: [
+									{ path: 'StartDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium' } },
+									{ path: 'EndDate', type: 'sap.ui.model.type.Date', formatOptions: { style: 'medium' } }
+								],
+								formatter: '.formatPeriod'
+							}" />
+							<Text text="{Days}" />
+							<ObjectStatus text="{Status}" state="{path: 'Status', formatter: '.formatStatusState'}" />
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+	</Page>
+
+</mvc:View>

@@ -1,0 +1,42 @@
+[
+	{
+		"ID": "LR-0001",
+		"Employee": "Maria Kaya",
+		"Type": "Annual",
+		"StartDate": "/Date(1762944000000)/",
+		"EndDate": "/Date(1763376000000)/",
+		"Days": 5,
+		"Status": "Approved",
+		"Note": "Family visit"
+	},
+	{
+		"ID": "LR-0002",
+		"Employee": "Maria Kaya",
+		"Type": "Sick",
+		"StartDate": "/Date(1761187200000)/",
+		"EndDate": "/Date(1761273600000)/",
+		"Days": 2,
+		"Status": "Approved",
+		"Note": "Doctor's certificate attached"
+	},
+	{
+		"ID": "LR-0003",
+		"Employee": "Jonas Weber",
+		"Type": "Unpaid",
+		"StartDate": "/Date(1763548800000)/",
+		"EndDate": "/Date(1764067200000)/",
+		"Days": 6,
+		"Status": "Pending",
+		"Note": "Extended trip"
+	},
+	{
+		"ID": "LR-0004",
+		"Employee": "Aisha Demir",
+		"Type": "Annual",
+		"StartDate": "/Date(1764153600000)/",
+		"EndDate": "/Date(1764240000000)/",
+		"Days": 2,
+		"Status": "Rejected",
+		"Note": "Month-end closing - please re-plan"
+	}
+]

@@ -1,0 +1,18 @@
+{
+  "name": "ui5-learn-09-fiori-elements-products",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 09 - Fiori Elements: product List Report and Object Page with local annotations and a local mock server",
+  "scripts": {
+    "start": "ui5 serve --port 8089 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist"
+  },
+  "devDependencies": {
+    "@sap-ux/ui5-middleware-fe-mockserver": "2.4.16",
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}

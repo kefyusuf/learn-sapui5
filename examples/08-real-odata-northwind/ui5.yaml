@@ -1,0 +1,29 @@
+specVersion: "4.0"
+metadata:
+  name: learn.realodata
+type: application
+framework:
+  name: SAPUI5
+  version: "1.152.0"
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+    - name: sap.ui.layout
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+server:
+  customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+    - name: ui5-middleware-simpleproxy
+      afterMiddleware: compression
+      # NOTE: mountPath sits at the definition level, NOT inside
+      # configuration - the UI5 CLI reads it from there. Inside
+      # configuration it is silently ignored and the middleware
+      # mounts at "/" (docs/09-common-mistakes.md, M14).
+      mountPath: "/northwind"
+      configuration:
+        baseUri: "https://services.odata.org"

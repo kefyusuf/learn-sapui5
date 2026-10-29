@@ -1,0 +1,51 @@
+<mvc:View controllerName="learn.routing.controller.Detail"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc"
+		  xmlns:core="sap.ui.core">
+
+	<Page id="detailPage" title="{id}" showNavButton="true"
+		  navButtonPress="onNavBack">
+		<content>
+			<VBox class="sapUiSmallMargin">
+
+				<ObjectHeader title="{id}"
+							  number="{path: 'total', formatter: '.formatTotal'}"
+							  numberUnit="EUR">
+					<attributes>
+						<ObjectAttribute title="{i18n>detail.customer}" text="{customer}" />
+						<ObjectAttribute title="{i18n>detail.date}" text="{date}" />
+					</attributes>
+					<statuses>
+						<ObjectStatus title="{i18n>detail.status}" text="{status}"
+									  state="{path: 'status', formatter: '.formatStatus'}" />
+					</statuses>
+				</ObjectHeader>
+
+				<Title text="{i18n>detail.items.title}" level="H3" class="sapUiMediumMarginTop" />
+				<Table id="itemsTable" items="{items}" class="sapUiSmallMarginTop">
+					<headerToolbar>
+						<Toolbar>
+							<Title text="{i18n>detail.items.title}" level="H4" />
+						</Toolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="10rem"><header><Text text="Product" /></header></Column>
+						<Column width="6rem" hAlign="End"><header><Text text="Qty" /></header></Column>
+						<Column width="6rem" hAlign="End"><header><Text text="Price" /></header></Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<Text text="{product}" />
+								<Text text="{quantity}" />
+								<Text text="{path: 'price', formatter: '.formatTotal'}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+
+			</VBox>
+		</content>
+	</Page>
+
+</mvc:View>

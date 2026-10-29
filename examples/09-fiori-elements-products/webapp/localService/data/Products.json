@@ -1,0 +1,12 @@
+[
+	{ "ID": 1, "Name": "Laser Mouse Pro", "Category": "Peripherals", "Price": "129.50", "Currency": "EUR", "Stock": 12 },
+	{ "ID": 2, "Name": "Ergo Keyboard XL", "Category": "Peripherals", "Price": "89.00", "Currency": "EUR", "Stock": 3 },
+	{ "ID": 3, "Name": "27\" 4K Monitor", "Category": "Displays", "Price": "449.00", "Currency": "EUR", "Stock": 7 },
+	{ "ID": 4, "Name": "USB-C Dock", "Category": "Peripherals", "Price": "159.90", "Currency": "EUR", "Stock": 0 },
+	{ "ID": 5, "Name": "Noise-Cancel Headset", "Category": "Audio", "Price": "219.00", "Currency": "EUR", "Stock": 4 },
+	{ "ID": 6, "Name": "Conference Speaker", "Category": "Audio", "Price": "299.00", "Currency": "EUR", "Stock": 2 },
+	{ "ID": 7, "Name": "Webcam FHD+", "Category": "Video", "Price": "79.90", "Currency": "EUR", "Stock": 18 },
+	{ "ID": 8, "Name": "Standing Desk Mat", "Category": "Furniture", "Price": "59.00", "Currency": "EUR", "Stock": 9 },
+	{ "ID": 9, "Name": "Laptop Stand Alu", "Category": "Furniture", "Price": "45.00", "Currency": "EUR", "Stock": 0 },
+	{ "ID": 10, "Name": "External SSD 1TB", "Category": "Storage", "Price": "129.00", "Currency": "EUR", "Stock": 5 }
+]

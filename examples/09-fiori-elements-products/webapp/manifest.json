@@ -1,0 +1,123 @@
+{
+	"_version": "1.12.0",
+
+	"sap.app": {
+		"id": "learn.feproducts",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/ZPRODUCTS_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "4.0",
+					"localUri": "localService/metadata.xml"
+				}
+			}
+		},
+		"sourceTemplate": {
+			"id": "ui5.template.basicv2",
+			"version": "1.0.0"
+		}
+	},
+
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+
+	"sap.ui5": {
+		"flexEnabled": false,
+
+		"dependencies": {
+			"minUI5Version": "1.152.0",
+			"libs": {
+				"sap.fe.templates": {}
+			}
+		},
+
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "learn.feproducts.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"synchronizationMode": "None",
+					"operationMode": "Server",
+					"autoExpandSelect": true,
+					"earlyRequests": true
+				}
+			}
+		},
+
+		"routing": {
+			"routes": [
+				{
+					"pattern": ":?query:",
+					"name": "ProductsList",
+					"target": "ProductsList"
+				},
+				{
+					"pattern": "Products({key}):?query:",
+					"name": "ProductsObjectPage",
+					"target": "ProductsObjectPage"
+				}
+			],
+			"targets": {
+				"ProductsList": {
+					"type": "Component",
+					"id": "ProductsList",
+					"name": "sap.fe.templates.ListReport",
+					"options": {
+						"settings": {
+							"entitySet": "Products",
+							"navigation": {
+								"Products": {
+									"detail": {
+										"route": "ProductsObjectPage"
+									}
+								}
+							}
+						}
+					}
+				},
+				"ProductsObjectPage": {
+					"type": "Component",
+					"id": "ProductsObjectPage",
+					"name": "sap.fe.templates.ObjectPage",
+					"options": {
+						"settings": {
+							"entitySet": "Products",
+							"navigation": {
+								"Products": {
+									"display": {
+										"route": "ProductsList"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

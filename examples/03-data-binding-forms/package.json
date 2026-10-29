@@ -1,0 +1,17 @@
+{
+  "name": "ui5-learn-03-data-binding-forms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 03 - Data binding: customer contact form with JSONModel, two-way binding, formatters and expression binding",
+  "scripts": {
+    "start": "ui5 serve --port 8083 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist"
+  },
+  "devDependencies": {
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}

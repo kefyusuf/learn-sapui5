@@ -1,0 +1,23 @@
+<!-- A fragment is a reusable piece of XML view that has NO controller.
+     Its controls get ids from the *view* when loaded with the view's id,
+     so this input is found via this.byId("nameInput") too. -->
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core">
+	<Dialog id="addDialog"
+			title="{i18n>dialog.title}"
+			contentWidth="24rem">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<Label text="{i18n>dialog.name}" labelFor="nameInput" />
+				<Input id="nameInput" />
+				<Label text="{i18n>dialog.price}" labelFor="priceInput" />
+				<Input id="priceInput" type="Number" />
+				<CheckBox id="stockInput" text="{i18n>dialog.stock}" selected="true" />
+			</VBox>
+		</content>
+		<buttons>
+			<Button text="{i18n>add.cancel}" press="onCancelProduct" />
+			<Button text="{i18n>add.save}" type="Emphasized" press="onSaveProduct" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

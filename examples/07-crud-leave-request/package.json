@@ -1,0 +1,17 @@
+{
+  "name": "ui5-learn-07-crud-leave-request",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 07 - Full CRUD: employee leave request app with create and delete against a mocked OData V2 service",
+  "scripts": {
+    "start": "ui5 serve --port 8087 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist"
+  },
+  "devDependencies": {
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}

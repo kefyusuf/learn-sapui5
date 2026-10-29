@@ -1,0 +1,43 @@
+{
+	"_version": "2.0.0",
+
+	"sap.app": {
+		"id": "learn.helloworld",
+		"type": "application",
+		"title": "Hello World",
+		"description": "Example 01 - your first UI5 application",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "learn.helloworld.view.App",
+			"type": "XML",
+			"id": "app"
+		},
+
+		"dependencies": {
+			"minUI5Version": "1.152.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {}
+			}
+		},
+
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		}
+	}
+}

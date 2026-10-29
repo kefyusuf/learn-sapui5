@@ -1,0 +1,30 @@
+[
+	{
+		"ID": "SO-1001",
+		"Customer": "Acme Industries Ltd.",
+		"OrderDate": "/Date(1760227200000)/",
+		"Status": "Shipped",
+		"Total": "4820.00"
+	},
+	{
+		"ID": "SO-1002",
+		"Customer": "Borealis Retail Group",
+		"OrderDate": "/Date(1760745600000)/",
+		"Status": "Processing",
+		"Total": "898.00"
+	},
+	{
+		"ID": "SO-1003",
+		"Customer": "Delta Logistics",
+		"OrderDate": "/Date(1761004800000)/",
+		"Status": "Open",
+		"Total": "1533.90"
+	},
+	{
+		"ID": "SO-1004",
+		"Customer": "Helios Energy",
+		"OrderDate": "/Date(1761091200000)/",
+		"Status": "Open",
+		"Total": "219.00"
+	}
+]

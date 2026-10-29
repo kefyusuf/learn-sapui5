@@ -1,0 +1,16 @@
+<mvc:View controllerName="learn.helloworld.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<Page id="page" title="My First UI5 App">
+		<content>
+			<VBox class="sapUiSmallMargin sapUiSmallMarginTop">
+				<Label text="Your name" labelFor="nameInput" />
+				<Input id="nameInput" placeholder="e.g. Maria" width="20rem" />
+				<Button text="Say hello" press="onSayHello" class="sapUiSmallMarginTop" />
+			</VBox>
+		</content>
+	</Page>
+
+</mvc:View>

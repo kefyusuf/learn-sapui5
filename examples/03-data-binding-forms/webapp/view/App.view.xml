@@ -1,0 +1,67 @@
+	<mvc:View controllerName="learn.databinding.controller.App"
+			  displayBlock="true"
+			  xmlns="sap.m"
+			  xmlns:core="sap.ui.core"
+			  xmlns:mvc="sap.ui.core.mvc"
+			  xmlns:layout="sap.ui.layout"
+			  xmlns:f="sap.ui.layout.form">
+
+	<Page id="page" title="{i18n>appTitle}">
+		<content>
+			<VBox class="sapUiSmallMargin">
+
+				<!-- Live summary: bound to the same model the form edits.
+				     Editing any input updates this bar on every keystroke. -->
+				<VBox class="summaryBar">
+					<Title text="{i18n>summary.title}" level="H4" />
+					<Text text="{
+						parts: [ { path: '/customer/name' }, { path: '/customer/email' } ],
+						formatter: '.formatSummary'
+					}" />
+				</VBox>
+
+				<f:SimpleForm id="customerForm"
+							  title="{i18n>form.title}"
+							  editable="true"
+							  layout="ResponsiveGridLayout"
+							  labelSpanL="3"
+							  labelSpanM="3"
+							  columnsL="1"
+							  columnsM="1"
+							  class="editableForm">
+					<f:content>
+						<core:Title text="{i18n>form.hint}" level="H6" />
+						<Label text="{i18n>label.name}" labelFor="nameInput" />
+						<Input id="nameInput" value="{/customer/name}"
+							   placeholder="Acme Industries Ltd."
+							   valueLiveUpdate="true" />
+						<Label text="{i18n>label.email}" labelFor="emailInput" />
+						<Input id="emailInput" value="{/customer/email}"
+							   type="Email" valueLiveUpdate="true" />
+						<Label text="{i18n>label.phone}" labelFor="phoneInput" />
+						<!-- One-way with formatter: model value -> pretty display -->
+						<Text text="{path: '/customer/phone', formatter: '.formatPhone'}" />
+						<Label text="{i18n>label.revenue}" labelFor="revenueInput" />
+						<!-- Two-way with a display formatter and input data type -->
+						<Input id="revenueInput" value="{path: '/customer/revenue', type: 'sap.ui.model.type.Float'}"
+							   description="EUR" valueLiveUpdate="true" />
+						<Text text="{path: '/customer/revenue', formatter: '.formatRevenue'}" />
+						<Label text="{i18n>label.vat}" labelFor="vatInput" />
+						<CheckBox id="vatInput" selected="{/customer/vatRegistered}" />
+						<Text text="VAT registered" visible="{= ${/customer/vatRegistered} === true }" />
+					</f:content>
+				</f:SimpleForm>
+
+				<HBox class="sapUiSmallMarginTop">
+					<!-- Expression binding: the button enables itself when the
+					     form holds a name and a syntactically plausible email. -->
+					<Button text="{i18n>save}" press="onSave" type="Emphasized"
+							enabled="{= ${/customer/name} !== '' && ${/customer/email}.indexOf('@') > 0 }" />
+					<Button text="{i18n>reset}" press="onReset" class="sapUiTinyMarginBegin" />
+				</HBox>
+
+			</VBox>
+		</content>
+	</Page>
+
+</mvc:View>

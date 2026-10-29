@@ -1,0 +1,17 @@
+{
+  "name": "ui5-learn-04-controls-lists-dialogs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 04 - Controls essentials: product catalog with lists, search, fragments and dialogs",
+  "scripts": {
+    "start": "ui5 serve --port 8084 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist"
+  },
+  "devDependencies": {
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}

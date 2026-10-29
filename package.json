@@ -1,0 +1,24 @@
+{
+  "name": "learn-sapui5",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Learn SAP UI5 by doing: progressive TypeScript examples with real-life scenarios, common mistakes, and documentation.",
+  "scripts": {
+    "start:01": "npm run start --workspace examples/01-hello-world",
+    "start:02": "npm run start --workspace examples/02-mvc-i18n",
+    "start:03": "npm run start --workspace examples/03-data-binding-forms",
+    "start:04": "npm run start --workspace examples/04-controls-lists-dialogs",
+    "start:05": "npm run start --workspace examples/05-routing-master-detail",
+    "start:06": "npm run start --workspace examples/06-odata-mockserver",
+    "start:07": "npm run start --workspace examples/07-crud-leave-request",
+    "start:08": "npm run start --workspace examples/08-real-odata-northwind",
+    "start:09": "npm run start --workspace examples/09-fiori-elements-products",
+    "typecheck": "npm run ts-typecheck --workspaces --if-present"
+  },
+  "workspaces": [
+    "examples/*"
+  ],
+  "allowScripts": {
+    "ui5-tooling-transpile@3.13.1": true
+  }
+}

@@ -1,0 +1,41 @@
+<!-- Dialog fragment for creating a leave request (no controller of its
+     own - handlers resolve against the view's controller). -->
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core"
+						 xmlns:f="sap.ui.layout.form">
+	<Dialog id="newRequestDialog"
+			title="{i18n>newDialog.title}"
+			contentWidth="24rem">
+		<content>
+			<f:SimpleForm editable="true"
+						  layout="ResponsiveGridLayout"
+						  labelSpanL="4"
+						  labelSpanM="4"
+						  columnsL="1"
+						  columnsM="1">
+				<f:content>
+					<Label text="{i18n>label.employee}" labelFor="employeeInput" />
+					<Input id="employeeInput" />
+					<Label text="{i18n>label.type}" labelFor="typeSelect" />
+					<Select id="typeSelect" selectedKey="Annual">
+						<items>
+							<core:Item key="Annual" text="Annual" />
+							<core:Item key="Sick" text="Sick" />
+							<core:Item key="Unpaid" text="Unpaid" />
+						</items>
+					</Select>
+					<Label text="{i18n>label.start}" labelFor="startPicker" />
+					<DatePicker id="startPicker" valueFormat="yyyy-MM-dd" displayFormat="medium" />
+					<Label text="{i18n>label.end}" labelFor="endPicker" />
+					<DatePicker id="endPicker" valueFormat="yyyy-MM-dd" displayFormat="medium" />
+					<Label text="{i18n>label.note}" labelFor="noteArea" />
+					<TextArea id="noteArea" rows="2" maxLength="200" />
+				</f:content>
+			</f:SimpleForm>
+		</content>
+		<buttons>
+			<Button text="{i18n>dialog.cancel}" press="onCancelRequest" />
+			<Button text="{i18n>dialog.submit}" type="Emphasized" press="onSubmitRequest" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

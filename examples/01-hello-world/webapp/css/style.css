@@ -1,0 +1,12 @@
+/* A UI5 app fills the whole browser window. Without these rules the page
+   collapses to its content height and controls can overlap the header -
+   a classic beginner bug (see docs/09-common-mistakes.md, M13).
+   The height chain is: html -> body -> ComponentContainer (height="100%"
+   set in index.html) -> XML view -> Page. */
+html, body {
+	height: 100%;
+}
+
+.sapUiComponentContainer .sapUiView {
+	height: 100%;
+}

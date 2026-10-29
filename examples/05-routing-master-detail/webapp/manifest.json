@@ -1,0 +1,89 @@
+{
+	"_version": "2.0.0",
+
+	"sap.app": {
+		"id": "learn.routing",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"applicationVersion": {
+			"version": "1.0.0"
+		}
+	},
+
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "learn.routing.view.App",
+			"type": "XML",
+			"id": "appView"
+		},
+
+		"dependencies": {
+			"minUI5Version": "1.152.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.ui.layout": {}
+			}
+		},
+
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "learn.routing.i18n.i18n"
+				}
+			}
+		},
+
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"path": "learn.routing.view",
+				"controlId": "app",
+				"controlAggregation": "pages",
+				"async": true
+			},
+			"routes": [
+				{
+					"name": "list",
+					"pattern": "",
+					"target": "master"
+				},
+				{
+					"name": "detail",
+					"pattern": "detail/{orderId}",
+					"target": "detail"
+				}
+			],
+			"targets": {
+				"master": {
+					"type": "View",
+					"name": "Master",
+					"level": 1
+				},
+				"detail": {
+					"type": "View",
+					"name": "Detail",
+					"level": 2
+				}
+			}
+		}
+	}
+}

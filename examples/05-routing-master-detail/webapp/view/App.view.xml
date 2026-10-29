@@ -1,0 +1,8 @@
+<!-- The App control is the navigation container. The router in the
+     manifest places Master and Detail views into its "pages" aggregation
+     (see controlId / controlAggregation in manifest.json). -->
+<mvc:View displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+	<App id="app" />
+</mvc:View>
