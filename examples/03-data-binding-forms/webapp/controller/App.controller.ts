@@ -2,7 +2,9 @@ import Controller from "sap/ui/core/mvc/Controller";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageToast from "sap/m/MessageToast";
+import MessageBox from "sap/m/MessageBox";
 import { formatter } from "learn/databinding/model/formatter";
+import { isValidEmail } from "learn/databinding/model/validator";
 
 const INITIAL_CUSTOMER = {
 	name: "",
@@ -59,13 +61,29 @@ export default class AppController extends Controller {
 		const oModel = oView.getModel() as JSONModel;
 		const sName = (oModel.getProperty("/customer/name") as string) ?? "";
 		const sEmail = (oModel.getProperty("/customer/email") as string) ?? "";
-		const oBundle = await (oView.getModel("i18n") as unknown as { getResourceBundle(): Promise<ResourceBundle> })
-			.getResourceBundle();
+
+		// Server-side checks are not enough - validate before the round trip.
+		if (!isValidEmail(sEmail)) {
+			MessageBox.error((await this._bundle()).getText("error.invalidEmail") ?? "");
+			return;
+		}
+
+		const oBundle = await this._bundle();
 		MessageToast.show(oBundle.getText("saved.message", [sName, sEmail]) ?? "");
 	}
 
 	public onReset(): void {
 		// Model -> UI direction: setData updates every bound control.
 		(this.getView()?.getModel() as JSONModel).setData({ customer: INITIAL_CUSTOMER });
+	}
+
+	private async _bundle(): Promise<ResourceBundle> {
+		const oI18n = this.getView()?.getModel("i18n") as unknown as {
+			getResourceBundle(): Promise<ResourceBundle> | ResourceBundle;
+		} | undefined;
+		if (!oI18n) {
+			throw new Error("i18n model missing on view");
+		}
+		return Promise.resolve(oI18n.getResourceBundle());
 	}
 }

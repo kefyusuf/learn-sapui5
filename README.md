@@ -10,6 +10,7 @@ A hands-on learning repository for **complete UI5 beginners**: 9 progressively h
 git clone <this-repo> && cd sapui5
 npm install          # one install for all 9 examples (npm workspaces)
 npm run start:01     # opens http://localhost:8081
+npm test             # headless QUnit suites (Chrome required)
 ```
 
 Ports 8081-8087 and 8089-8090 serve examples 01-09 (08 runs on 8090 - port 8088 can collide with local services on some Windows machines). `npm run typecheck` checks all examples.
@@ -56,6 +57,7 @@ When an error message looks familiar, look it up there first.
 | [09-common-mistakes](docs/09-common-mistakes.md) | **The catalog: M01-M14** |
 | [10-glossary](docs/10-glossary.md) | SAP jargon decoded (RAP, CAP, CDS, FLP...) |
 | [11-learning-path](docs/11-learning-path.md) | Roadmap with time estimates |
+| [12-testing-tdd](docs/12-testing-tdd.md) | QUnit harness, TDD cycle, branch → commit → PR workflow |
 
 ## Technical facts
 

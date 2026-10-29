@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ui5 serve --port 8083 -o index.html",
     "ts-typecheck": "tsc --noEmit",
-    "build": "ui5 build --clean-dest --dest dist"
+    "build": "ui5 build --clean-dest --dest dist",
+    "test": "node ../../scripts/test-headless.mjs 03"
   },
   "devDependencies": {
     "@sapui5/types": "1.152.0",

@@ -27,7 +27,12 @@ From the repository root:
 ```bash
 npm install          # installs all workspaces once
 npm run typecheck    # TypeScript checks every example
-npm run start:01     # or the example you changed; open http://localhost:8081
+npm test             # headless QUnit suites (example 03 pilot; more on the way)
+npm run start:01     # or the example you changed
 ```
 
 If you changed an example, open it in the browser and click through the main flow before submitting.
+
+## Workflow: TDD → commit/branch → PR
+
+Work test-first (see [docs/12-testing-tdd.md](docs/12-testing-tdd.md)): write the failing test, make it pass, then open a branch (`feature/...` / `fix/...`), commit with a conventional message - code and tests in the same commit - and open a PR against `main` once `npm run typecheck` and `npm test` are green.
