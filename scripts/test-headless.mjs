@@ -19,8 +19,15 @@ import { join, resolve } from "node:path";
 import http from "node:http";
 
 const ROOT = resolve(new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-const CHROME = process.env.CHROME_BIN
-	|| "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const CHROME_CANDIDATES = [
+	process.env.CHROME_BIN,
+	"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+	"/usr/bin/google-chrome",
+	"/usr/bin/google-chrome-stable",
+	"/usr/bin/chromium-browser",
+	"/usr/bin/chromium"
+].filter(Boolean);
+const CHROME = CHROME_CANDIDATES.find((p) => existsSync(p)) || CHROME_CANDIDATES[0];
 const TESTPAGES = [
 	"test/unit/unitTests.qunit.html",
 	"test/integration/opaTests.qunit.html"
@@ -67,14 +74,15 @@ async function waitForServer(url, tries = 60) {
  */
 async function runPage(url) {
 	const profile = mkdtempSync(join(tmpdir(), "ui5-test-"));
+	const isWin = process.platform === "win32";
 	const chrome = spawn(
-		`"${CHROME}"`,
+		isWin ? `"${CHROME}"` : CHROME,
 		[
 			"--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run",
 			"--window-size=1600,1200", `--user-data-dir="${profile}"`,
 			"--remote-debugging-port=0", "about:blank"
 		],
-		{ shell: process.platform === "win32", stdio: ["ignore", "ignore", "pipe"] }
+		{ shell: isWin, stdio: ["ignore", "ignore", "pipe"] }
 	);
 
 	let wsUrl = "";
@@ -148,7 +156,7 @@ async function runPage(url) {
 		ws.close();
 		return { text: resultText.trim(), failures: JSON.parse(failures), messages: JSON.parse(messages) };
 		} finally {
-			if (process.platform === "win32") {
+			if (isWin) {
 				try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
 			} else {
 				try { process.kill(-chrome.pid, "SIGTERM"); } catch { chrome.kill("SIGTERM"); }
