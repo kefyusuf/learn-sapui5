@@ -10,6 +10,7 @@ import Filter from "sap/ui/model/Filter";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageToast from "sap/m/MessageToast";
+import MessageBox from "sap/m/MessageBox";
 import ListItemBase from "sap/m/ListItemBase";
 import { formatter } from "learn/controls/model/formatter";
 
@@ -105,16 +106,22 @@ export default class AppController extends Controller {
 
 		const sName = oName.getValue().trim();
 		const nPrice = Number(oPrice.getValue());
-		if (!sName || nPrice <= 0) {
-			// MessageStrip in the dialog would be nicer; keep it simple here.
+		// Validation with VISIBLE feedback - a silent `return` left users
+		// staring at an unresponsive button (fixed test-first, docs/12).
+		const oBundle = await (this.getView()?.getModel("i18n") as unknown as {
+			getResourceBundle(): Promise<ResourceBundle>;
+		}).getResourceBundle();
+		if (!sName) {
+			MessageBox.error(oBundle.getText("error.name") ?? "");
+			return;
+		}
+		if (!(nPrice > 0)) {
+			MessageBox.error(oBundle.getText("error.price") ?? "");
 			return;
 		}
 
 		const oModel = this.getView()?.getModel() as JSONModel;
 		const aProducts = oModel.getProperty("/products") as Product[];
-		const oBundle = await (this.getView()?.getModel("i18n") as unknown as {
-			getResourceBundle(): Promise<ResourceBundle>;
-		}).getResourceBundle();
 
 		aProducts.unshift({
 			name: sName,

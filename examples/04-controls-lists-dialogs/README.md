@@ -16,6 +16,8 @@
 npm run start:04   # from the repository root
 ```
 
+Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`) - formatter tests plus **controller tests** for the add-product flow: the controller is instantiated standalone with sinon sandbox stubs for view, dialog and i18n. The suite drove a UX fix test-first: invalid input now shows a `MessageBox` error (`error.name` / `error.price`) instead of silently doing nothing. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+
 ## Why a fragment for the dialog?
 
 A `Dialog` is a popup - it does not belong to the page layout. Keeping it in `ProductDialog.fragment.xml`:
