@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Headless QUnit runner for the examples in this repo.
+ * Headless QUnit/OPA5 runner for the examples in this repo.
  *
- * Starts `ui5 serve` for each example that has a unit test page, runs the
- * page in headless Chrome (same technique as the manual verification
- * flows), parses the rendered QUnit results and exits non-zero on any
- * failure. No extra test dependencies - Chrome + this script are enough.
+ * For each example it starts `ui5 serve`, opens the test page in headless
+ * Chrome via the DevTools protocol and POLLS the QUnit result element in
+ * real time until tests finish (OPA5 journeys need real time - virtual
+ * time budgets would expire before the component boots). Exits non-zero
+ * on any failure. No extra test dependencies.
  *
  * Usage:
  *   node scripts/test-headless.mjs           # all examples with tests
@@ -20,7 +21,12 @@ import http from "node:http";
 const ROOT = resolve(new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
 const CHROME = process.env.CHROME_BIN
 	|| "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-const TESTPAGE = "test/unit/unitTests.qunit.html";
+const TESTPAGES = [
+	"test/unit/unitTests.qunit.html",
+	"test/integration/opaTests.qunit.html"
+];
+const PAGE_TIMEOUT_MS = 180000;
+const POLL_INTERVAL_MS = 1500;
 
 const TARGETS = [
 	{ prefix: "03", dir: "03-data-binding-forms", port: 8083 },
@@ -54,43 +60,115 @@ async function waitForServer(url, tries = 60) {
 	return false;
 }
 
-function dumpDom(url) {
+/**
+ * Opens the page in headless Chrome (DevTools protocol) and polls the
+ * QUnit result element until tests are done. Returns the final result
+ * element text plus the names of failing tests.
+ */
+async function runPage(url) {
 	const profile = mkdtempSync(join(tmpdir(), "ui5-test-"));
+	const chrome = spawn(
+		`"${CHROME}"`,
+		[
+			"--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run",
+			"--window-size=1600,1200", `--user-data-dir="${profile}"`,
+			"--remote-debugging-port=0", "about:blank"
+		],
+		{ shell: process.platform === "win32", stdio: ["ignore", "ignore", "pipe"] }
+	);
+
+	let wsUrl = "";
+	chrome.stderr.on("data", (chunk) => {
+		const m = /DevTools listening on (ws:\/\/\S+)/.exec(chunk.toString());
+		if (m && !wsUrl) wsUrl = m[1];
+	});
+
 	try {
-		return execSync(
-			`"${CHROME}" --headless=new --disable-gpu --no-sandbox --no-first-run` +
-			` --user-data-dir="${profile}" --virtual-time-budget=30000 --dump-dom "${url}"`,
-			{ encoding: "utf8", maxBuffer: 64 * 1024 * 1024, timeout: 120000 }
-		);
-	} finally {
-		rmSync(profile, { recursive: true, force: true });
-	}
+		// Wait for the DevTools endpoint to announce itself.
+		for (let i = 0; i < 100 && !wsUrl; i++) {
+			await new Promise((r) => setTimeout(r, 100));
+		}
+		if (!wsUrl) throw new Error("Chrome did not expose the DevTools websocket");
+
+		const httpPort = /ws:\/\/127\.0\.0\.1:(\d+)\//.exec(wsUrl)?.[1];
+		if (!httpPort) throw new Error("Cannot parse the DevTools port");
+
+		// The browser target speaks the page lifecycle; find the page target.
+		const listRaw = await new Promise((res, rej) => {
+			http.get({ host: "127.0.0.1", port: Number(httpPort), path: "/json/list" }, (r) => {
+				let d = "";
+				r.on("data", (c) => (d += c));
+				r.on("end", () => res(d));
+			}).on("error", rej);
+		});
+		const page = JSON.parse(listRaw).find((t) => t.type === "page");
+		if (!page) throw new Error("No page target in Chrome");
+
+		const ws = new WebSocket(page.webSocketDebuggerUrl);
+		await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
+
+		let msgId = 0;
+		const pending = new Map();
+		ws.onmessage = (ev) => {
+			const m = JSON.parse(ev.data);
+			if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
+		};
+		const send = (method, params = {}) => new Promise((res) => {
+			const id = ++msgId;
+			pending.set(id, res);
+			ws.send(JSON.stringify({ id, method, params }));
+		});
+		const evalJs = async (expression) => {
+			const r = await send("Runtime.evaluate", { expression, returnByValue: true });
+			return r.result?.result?.value;
+		};
+
+		await send("Runtime.enable");
+		await send("Page.enable");
+		await send("Page.navigate", { url });
+
+		const started = Date.now();
+		let resultText = "";
+		while (Date.now() - started < PAGE_TIMEOUT_MS) {
+			await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+			resultText = (await evalJs(
+				"(document.getElementById('qunit-testresult') || {}).textContent || ''"
+			)) || "";
+			// QUnit prints results only when the run is finished.
+			if (/tests? completed/.test(resultText) || /assertions? of/.test(resultText)) break;
+		}
+
+		const failures = (await evalJs(
+			"JSON.stringify([...document.querySelectorAll('li.fail .test-name')].map(e => e.textContent.trim()))"
+		)) || "[]";
+		const messages = (await evalJs(
+			"JSON.stringify([...document.querySelectorAll('li.fail .test-message')].map(e => e.textContent.trim().slice(0, 300)))"
+		)) || "[]";
+
+		ws.close();
+		return { text: resultText.trim(), failures: JSON.parse(failures), messages: JSON.parse(messages) };
+		} finally {
+			if (process.platform === "win32") {
+				try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
+			} else {
+				try { process.kill(-chrome.pid, "SIGTERM"); } catch { chrome.kill("SIGTERM"); }
+			}
+			// Best effort: Chrome may hold file locks briefly after being killed.
+			try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch { /* leave temp dir */ }
+		}
 }
 
-function parseResults(dom) {
+function parseResults(oPage) {
+	const ran = Boolean(oPage.text);
 	// QUnit 2.3's result element has two phrasings:
 	// all pass:  "N assertions of N passed, 0 failed."
 	// failures:  "N tests completed in X ms, with F failed, ..."
-	const passedMatch = /(\d+)\s+assertions?\s+of\s+(\d+)\s+passed/.exec(dom);
-	const failedMatch = /(\d+)\s+tests?\s+completed[^,]*,?\s*with\s+(\d+)\s+failed/.exec(dom);
-	const totalFailures = failedMatch
-		? Number(failedMatch[2])
-		: (dom.match(/<li[^>]*class="fail"/g) ?? []).length;
-	// Pair each test <li> with the test-name INSIDE the same block only
-	// (bounded lookahead), so pass blocks never leak into the failure list.
-	const failures = [...dom.matchAll(
-		/<li[^>]*class="fail"[^>]*>(?:(?!<\/li>|<li)[\s\S])*?class="test-name"[^>]*>([^<]*)/g
-	)].map((m) => m[1].trim());
-	const ran = Boolean(passedMatch || failedMatch);
+	const failedMatch = /with\s+(\d+)\s+failed/.exec(oPage.text);
 	return {
 		run: ran,
-		passed: ran && totalFailures === 0,
-		summary: ran
-			? (passedMatch
-				? `all green: ${passedMatch[1]}/${passedMatch[2]} assertions passed`
-				: `tests: ${failedMatch[1]}, failing: ${totalFailures}`)
-			: "QUnit did not report a result",
-		failures: [...new Set(failures)]
+		passed: ran && (!failedMatch || Number(failedMatch[1]) === 0),
+		summary: ran ? oPage.text.replace(/\s+/g, " ").trim() : "QUnit did not report a result",
+		failures: oPage.failures
 	};
 }
 
@@ -106,37 +184,38 @@ let anyFailed = false;
 
 for (const t of targets) {
 	const cwd = join(ROOT, "examples", t.dir);
-	const page = join(cwd, "webapp", TESTPAGE);
-	if (!existsSync(page)) {
-		console.log(`- ${t.prefix} ${t.dir}: no test page, skipped`);
-		continue;
-	}
-
-	console.log(`- ${t.prefix} ${t.dir}: starting ui5 serve on port ${t.port}...`);
-	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
-	const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
-		cwd, stdio: "ignore", shell: process.platform === "win32",
-		// On Linux the child becomes a group leader so stopServer can kill
-		// the whole tree (npx -> ui5 -> ...) with one signal.
-		detached: process.platform !== "win32"
-	});
-
-	try {
-		const url = `http://localhost:${t.port}/${TESTPAGE}`;
-		const up = await waitForServer(url);
-		if (!up) {
-			console.log(`  FAILED: server did not come up`);
-			anyFailed = true;
+	for (const sPage of TESTPAGES) {
+		if (!existsSync(join(cwd, "webapp", sPage))) {
 			continue;
 		}
 
-		const dom = dumpDom(url);
-		const r = parseResults(dom);
-		if (!r.run || !r.passed) anyFailed = true;
-		console.log(`  ${r.run && r.passed ? "PASS" : "FAIL"}: ${r.summary}`);
-		for (const f of r.failures) console.log(`    failing: ${f}`);
-	} finally {
-		stopServer(server);
+		console.log(`- ${t.prefix} ${t.dir}: ${sPage} (port ${t.port})...`);
+		const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+		const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
+			cwd, stdio: "ignore", shell: process.platform === "win32",
+			// On Linux the child becomes a group leader so stopServer can kill
+			// the whole tree (npx -> ui5 -> ...) with one signal.
+			detached: process.platform !== "win32"
+		});
+
+		try {
+			const url = `http://localhost:${t.port}/${sPage}`;
+			const up = await waitForServer(url);
+			if (!up) {
+				console.log(`  FAILED: server did not come up`);
+				anyFailed = true;
+				continue;
+			}
+
+			const oPage = await runPage(url);
+			const r = parseResults(oPage);
+			if (!r.run || !r.passed) anyFailed = true;
+			console.log(`  ${r.run && r.passed ? "PASS" : "FAIL"}: ${r.summary}`);
+			for (const f of r.failures) console.log(`    failing: ${f}`);
+			for (const m of r.messages ?? []) console.log(`    message: ${m.slice(0, 220)}`);
+		} finally {
+			stopServer(server);
+		}
 	}
 }
 

@@ -55,6 +55,18 @@ Two runtime traps, both hit while building this:
 
 Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first), example 04 add-product flow (controller + sinon). Next candidates: OPA5 integration tests that drive whole flows in the real UI.
 
+## OPA5: flow tests against the real app
+
+`test/integration/` holds OPA5 journeys: they boot the **real component** and drive real controls. The runner handles them like unit pages (real-time polling - virtual time budgets are incompatible with OPA5's waits). Five traps, all hit while building this:
+
+1. The QUnit integration module is **`sap/ui/test/opaQunit`** (not `opa5QUnit`).
+2. `Opa5` must be **imported explicitly** (`sap/ui/test/Opa5`) - there is no global.
+3. Actions take **option objects**: `new EnterText({ text: "..." })` - a bare string is treated as an ID.
+4. With `Opa5.extendConfig({ viewNamespace: "learn.databinding.view." })`, `waitFor({ viewName: "App" })` uses the **short name** - the full name gets double-prefixed and matches nothing (silent 20s timeout).
+5. OPA5 waits in **real time** - virtual-time-budget runners expire before the app boots; the CDP polling runner exists for exactly this reason.
+
+The example 03 journey found **M15** on its first run: the save button it was supposed to click did not exist because a raw `&&` truncated the view.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.

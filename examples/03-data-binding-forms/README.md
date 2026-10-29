@@ -16,7 +16,7 @@
 npm run start:03   # from the repository root
 ```
 
-Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`). The formatter and validator modules are fully covered - this is the repo's TDD pilot (see [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md)). The tests caught and fixed a real bug: 10-digit phone numbers were split 4-3-2-1 (`0555 112 23 3`) instead of 4-3-3 (`0555 112 233`).
+Tests: `npm test` runs TWO suites headless - the **unit** tests (`webapp/test/unit/`, formatters + email validator) and the **OPA5 integration** journey (`webapp/test/integration/`, drives the real app: type a name → summary updates; valid email → save button enables). The OPA5 journey immediately caught a real bug: a raw `&&` in an expression binding silently truncated the view, so the save button never rendered (M15). See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md). The formatter/validator tests also caught a real bug: 10-digit phone numbers were split 4-3-2-1 (`0555 112 23 3`) instead of 4-3-3 (`0555 112 233`).
 
 ## The four binding directions shown in one screen
 

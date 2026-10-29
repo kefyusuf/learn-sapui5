@@ -14,7 +14,7 @@
 				     Editing any input updates this bar on every keystroke. -->
 				<VBox class="summaryBar">
 					<Title text="{i18n>summary.title}" level="H4" />
-					<Text text="{
+					<Text id="summaryText" text="{
 						parts: [ { path: '/customer/name' }, { path: '/customer/email' } ],
 						formatter: '.formatSummary'
 					}" />
@@ -54,9 +54,11 @@
 
 				<HBox class="sapUiSmallMarginTop">
 					<!-- Expression binding: the button enables itself when the
-					     form holds a name and a syntactically plausible email. -->
-					<Button text="{i18n>save}" press="onSave" type="Emphasized"
-							enabled="{= ${/customer/name} !== '' && ${/customer/email}.indexOf('@') > 0 }" />
+					     form holds a name and a syntactically plausible email.
+					     XML: raw && inside an attribute silently truncates the
+					     view at that point - escape as &amp;&amp; (docs/09, M15). -->
+					<Button id="saveButton" text="{i18n>save}" press="onSave" type="Emphasized"
+							enabled="{= ${/customer/name} !== '' &amp;&amp; ${/customer/email}.indexOf('@') > 0 }" />
 					<Button text="{i18n>reset}" press="onReset" class="sapUiTinyMarginBegin" />
 				</HBox>
 
