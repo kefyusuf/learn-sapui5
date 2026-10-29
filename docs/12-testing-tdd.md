@@ -39,7 +39,21 @@ The pilot cycle in example 03 paid off immediately: the characterization tests f
 
 The second cycle (example 07) shows the *extraction* pattern: the validation rules lived inline in the controller; they were pulled into `model/validator.ts` **test-first** - including a new `error.missingDates` rule, because the tests documented that missing dates would previously flow into the day calculation and produce `NaN`.
 
-Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first). Next candidates: controller tests (sinon stubs for views/models), then OPA5 integration tests that drive whole flows.
+## Controller tests: instantiate, stub, await
+
+Example 04's `controller/App.test.js` is the pattern for testing a controller **without a view**:
+
+1. `new AppController()` - controllers instantiate standalone.
+2. Stub the view layer: `sinon.stub(oController, "getView")` / `"byId"` return fakes (plain objects with the methods the code touches: `getValue`, `setValue`, `getSelected`).
+3. Stub the boundaries you cannot have in a unit test: `MessageBox.error`, `MessageToast.show` (statics) and the i18n model (a fake bundle that echoes keys, so assertions verify *which* message shows).
+4. `await` the async handler, then assert on state (model changed) and interactions (dialog closed, error shown).
+
+Two runtime traps, both hit while building this:
+
+- **Sinon comes from the UI5 runtime**: `sap/ui/thirdparty/sinon-4` - and its UMD wrapper registers with the UI5 loader, so require it through the loader; `window.sinon` does not exist.
+- **Sinon 4 has no top-level `restore`** (that arrived in sinon 5): use `sinon.createSandbox()` per test and `sandbox.restore()` in `afterEach`, otherwise you get `Attempted to wrap ... which is already wrapped` on the second test.
+
+Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first), example 04 add-product flow (controller + sinon). Next candidates: OPA5 integration tests that drive whole flows in the real UI.
 
 ## Git workflow: branch → commit → PR
 

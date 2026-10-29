@@ -2,7 +2,8 @@
 QUnit.config.autostart = false;
 
 sap.ui.require([
-	"learn/controls/test/unit/model/formatter.test"
+	"learn/controls/test/unit/model/formatter.test",
+	"learn/controls/test/unit/controller/App.test"
 ], function () {
 	"use strict";
 	QUnit.start();
