@@ -24,7 +24,11 @@ const TESTPAGE = "test/unit/unitTests.qunit.html";
 
 const TARGETS = [
 	{ prefix: "03", dir: "03-data-binding-forms", port: 8083 },
-	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 }
+	{ prefix: "04", dir: "04-controls-lists-dialogs", port: 8084 },
+	{ prefix: "05", dir: "05-routing-master-detail", port: 8085 },
+	{ prefix: "06", dir: "06-odata-mockserver", port: 8086 },
+	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 },
+	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 }
 ];
 
 const filter = process.argv[2];

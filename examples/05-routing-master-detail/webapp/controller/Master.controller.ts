@@ -3,18 +3,17 @@ import UIComponent from "sap/ui/core/UIComponent";
 import StandardListItem from "sap/m/StandardListItem";
 import Context from "sap/ui/model/Context";
 import Router from "sap/ui/core/routing/Router";
+import { formatter } from "learn/routing/model/formatter";
 
 /**
  * @namespace learn.routing.controller
  */
 export default class MasterController extends Controller {
 
+	// Thin adapter for the XML view: "." resolves here, the rule lives in
+	// the tested formatter module.
 	public formatStatus(sStatus: string): string {
-		switch (sStatus) {
-			case "Shipped": return "Success";
-			case "Processing": return "Warning";
-			default: return "None";
-		}
+		return formatter.formatStatus(sStatus);
 	}
 
 	public onOrderSelected(oEvent: { getParameter(name: "listItem"): object | undefined }): void {
