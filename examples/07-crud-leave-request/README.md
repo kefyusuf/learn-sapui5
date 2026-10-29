@@ -16,6 +16,8 @@
 npm run start:07   # from the repository root
 ```
 
+Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`). All validation rules live in the unit-tested `model/validator.ts` (`validateLeaveRequest` + `calcDays`) - extracted from the controller test-first. The suite also documented a latent bug: missing dates previously slipped through and produced `NaN` days; the new `error.missingDates` rule blocks that.
+
 The mock server simulates writes: a POST adds a row to its in-memory data, a DELETE removes it. Refresh the browser and your data is back - mocks reset, backends don't.
 
 ## The CRUD checklist this example follows

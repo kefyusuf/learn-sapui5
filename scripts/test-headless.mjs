@@ -23,7 +23,8 @@ const CHROME = process.env.CHROME_BIN
 const TESTPAGE = "test/unit/unitTests.qunit.html";
 
 const TARGETS = [
-	{ prefix: "03", dir: "03-data-binding-forms", port: 8083 }
+	{ prefix: "03", dir: "03-data-binding-forms", port: 8083 },
+	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 }
 ];
 
 const filter = process.argv[2];
