@@ -305,6 +305,28 @@ new ComponentContainer({ name: "...", async: true, height: "100%" })
 
 ---
 
+## M15 - Expression binding with raw `&&`: the view silently truncates
+
+**Symptom:** controls after a certain point of the view simply do not exist - no error in the console (or only an unrelated warning). In this repo, the Save/Reset buttons of example 03 never rendered.
+
+**Cause:** an expression binding inside an XML attribute containing raw `&&`:
+
+**Wrong:**
+```xml
+<Button enabled="{= ${/customer/name} !== '' && ${/customer/email}.indexOf('@') > 0 }" />
+```
+
+The XML parser treats the bare `&` as the start of an entity reference and the view content after that attribute is lost. **There is no usable error message** - which is what makes this so costly.
+
+**Fixed:**
+```xml
+<Button enabled="{= ${/customer/name} !== '' &amp;&amp; ${/customer/email}.indexOf('@') > 0 }" />
+```
+
+**Lesson:** inside XML attributes, escape `&&` as `&amp;&amp;` (and `<` as `&lt;`) in every expression binding. Symptom to remember: *view truncates silently at an expression binding*. This shipped in example 03 from day one and was only caught when OPA5 flow tests tried to find the save button.
+
+---
+
 ## Quick reference: error → mistake
 
 | Error fragment | Mistake |
@@ -322,3 +344,4 @@ new ComponentContainer({ name: "...", async: true, height: "100%" })
 | `$metadata` 404 on real service | M12 |
 | content under header, 44px page | M13 |
 | backend answers for `/index.html` | M14 |
+| **controls missing after an expression binding, no error** | **M15** |
