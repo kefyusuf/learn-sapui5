@@ -75,6 +75,7 @@ The example 03 journey found **M15** on its first run: the save button it was su
 - **No `.and()` chaining inside page objects** - `this.waitFor(...).and(...)` is journey-syntax only; use two page methods and chain in the journey.
 - **OData apps: start the mock server in `allJourneys.js`** before the journeys - an OPA page does not run the app's `index.html` boot chain (docs/09, M08).
 - **Pressing a list item**: the old `ItemMatcher` was removed from UI5 - filter with `controlType: "sap.m.StandardListItem"` + `new PropertyStrictEquals({ name: "title", value: ... })` and let `Press` act on the matched item (example 05 journey).
+- **`id` + `controlType` form an AND pipeline** - `waitFor({ id: "ordersTable", controlType: "sap.m.ColumnListItem" })` can never match (the id is the table, the controlType wants its rows). Drop the id and filter rows by **`new BindingPath({ path: "/SalesOrderSet('SO-1002')" })`** - the OData-idiomatic row matcher (example 06 journey).
 
 ## CI
 

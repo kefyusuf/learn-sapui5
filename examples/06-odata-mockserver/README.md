@@ -16,6 +16,8 @@
 npm run start:06   # from the repository root
 ```
 
+Tests: `npm test` runs TWO suites headless - **unit** tests (formatters) and the **OPA5 integration** journey: selects a real row in the OData table (matched by `BindingPath` on the row's entity path) and verifies the `$expand`-ed items land in the detail table. The OPA page starts the mock server itself - an OPA run does not execute the app's `index.html` boot chain. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+
 Open the browser network tab (F12) and reload: every request to `/sap/opu/odata/sap/ZSALESORDERS_SRV/...` is intercepted and answered by the mock server - you can see the OData protocol in action.
 
 ## The pieces

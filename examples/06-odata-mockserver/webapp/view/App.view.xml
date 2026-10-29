@@ -43,7 +43,7 @@
 					   visible="{= ${/selectedPath} !== '' }">
 					<!-- Relative binding: this table shows {Items} of whatever
 					     order the view is bound to (set by bindElement). -->
-					<Table items="{Items}">
+					<Table id="itemsTable" items="{Items}">
 						<columns>
 							<Column><header><Text text="{i18n>column.product}" /></header></Column>
 							<Column width="5rem" hAlign="End"><header><Text text="{i18n>column.qty}" /></header></Column>
