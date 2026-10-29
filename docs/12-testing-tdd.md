@@ -78,6 +78,16 @@ The example 03 journey found **M15** on its first run: the save button it was su
 - **`id` + `controlType` form an AND pipeline** - `waitFor({ id: "ordersTable", controlType: "sap.m.ColumnListItem" })` can never match (the id is the table, the controlType wants its rows). Drop the id and filter rows by **`new BindingPath({ path: "/SalesOrderSet('SO-1002')" })`** - the OData-idiomatic row matcher (example 06 journey).
 - **The Page's auto nav button has no id** - it is the only `sap.m.Button` in the detail view, so `waitFor({ viewName: "Detail", controlType: "sap.m.Button", actions: new Press() })` suffices (example 05 back journey). Deep-link journeys (`iStartMyUIComponent` + `hash`) need more investigation for standalone boots - follow-up.
 
+## Fiori Elements (example 09): open research item
+
+Testing the FE List Report with standalone OPA5 **does not work yet** - documented so the next attempt starts from the evidence:
+
+- The FE mock server is **server-side middleware** (ui5.yaml) - unlike examples 06/07, no page-level boot is needed; the data layer was verified working (metadata 200, `$batch` returns all 10 products).
+- **Blocker**: booting the FE `AppComponent` via `iStartMyUIComponent` stalls in headless runs. The loader's late autoconfig resolves **app-namespace requires to `/resources/<ns>/...` (404)** even though the page's `resource-roots` mapping is correct (`sap.ui.require.toUrl` returns the right URL seconds later). A self-contained journey (no app-namespace requires at all) still stalls at component boot.
+- Candidate next steps: the official **FE test harness** (`sap/fe/test/JourneyRunner` with an FLP sandbox iframe), or investigating the loader autoconfig merge order for FE apps.
+
+For now, FE apps in this repo are verified by the manual headless technique: CDP-poll `index.html` until a product name appears in the body text (real time; virtual-time budgets expire before the FE boot completes).
+
 ## CI
 
 `.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.
