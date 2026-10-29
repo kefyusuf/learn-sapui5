@@ -15,6 +15,8 @@
 npm run start:02   # from the repository root
 ```
 
+Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`) - controller tests verifying that `onInit` attaches the employee model and that `onSayHi` greets the employee **by name through the i18n bundle** (the fake bundle echoes keys and args, so the tests verify exactly how the greeting is composed). See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+
 ## Key concepts
 
 ### The three parts of MVC in UI5
