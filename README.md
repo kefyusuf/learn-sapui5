@@ -1,5 +1,7 @@
 # Learn SAP UI5 by Doing
 
+[![CI](https://github.com/kefyusuf/learn-sapui5/actions/workflows/ci.yml/badge.svg)](https://github.com/kefyusuf/learn-sapui5/actions/workflows/ci.yml)
+
 A hands-on learning repository for **complete UI5 beginners**: 9 progressively harder, fully working **TypeScript** applications, each built around a real-life business scenario - plus a catalog of the mistakes everyone actually makes (including the ones made while building this repo).
 
 **Verified**: every example runs, renders and passes `tsc --noEmit` on SAPUI5 **1.152** with Node 20+.

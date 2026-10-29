@@ -8,7 +8,7 @@
 		<content>
 			<VBox class="sapUiSmallMargin">
 
-				<ObjectHeader title="{id}"
+				<ObjectHeader id="objectHeader" title="{id}"
 							  number="{path: 'total', formatter: '.formatTotal'}"
 							  numberUnit="EUR">
 					<attributes>
