@@ -36,6 +36,7 @@ const PAGE_TIMEOUT_MS = 180000;
 const POLL_INTERVAL_MS = 1500;
 
 const TARGETS = [
+	{ prefix: "01", dir: "01-hello-world", port: 8081 },
 	{ prefix: "02", dir: "02-mvc-i18n", port: 8082 },
 	{ prefix: "03", dir: "03-data-binding-forms", port: 8083 },
 	{ prefix: "04", dir: "04-controls-lists-dialogs", port: 8084 },
