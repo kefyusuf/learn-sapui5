@@ -16,7 +16,7 @@
 npm run start:04   # from the repository root
 ```
 
-Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`) - formatter tests plus **controller tests** for the add-product flow: the controller is instantiated standalone with sinon sandbox stubs for view, dialog and i18n. The suite drove a UX fix test-first: invalid input now shows a `MessageBox` error (`error.name` / `error.price`) instead of silently doing nothing. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+Tests: `npm test` runs TWO suites headless - **unit** tests (formatters + the add-product controller with sinon sandbox stubs) and the **OPA5 integration** journey: opens the real dialog, adds a product, saves and verifies the refreshed catalog. The journeys caught **M16** - the dialog's buttons were dead because `Fragment.load` was missing `controller: this` - and drove the visible-validation UX fix (`error.name` / `error.price` MessageBox instead of silent return). See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
 
 ## Why a fragment for the dialog?
 

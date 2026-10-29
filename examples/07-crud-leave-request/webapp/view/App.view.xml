@@ -14,8 +14,8 @@
 					<Toolbar>
 						<Title text="{i18n>list.title}" level="H4" />
 						<ToolbarSpacer />
-						<Button text="{i18n>delete}" icon="sap-icon://delete" press="onDeleteRequest" type="Transparent" />
-						<Button text="{i18n>new}" icon="sap-icon://add" press="onNewRequest" type="Emphasized" />
+						<Button id="deleteButton" text="{i18n>delete}" icon="sap-icon://delete" press="onDeleteRequest" type="Transparent" />
+						<Button id="newRequestButton" text="{i18n>new}" icon="sap-icon://add" press="onNewRequest" type="Emphasized" />
 					</Toolbar>
 				</headerToolbar>
 				<columns>

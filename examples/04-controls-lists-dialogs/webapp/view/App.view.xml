@@ -40,7 +40,7 @@
 		<footer>
 			<Toolbar>
 				<ToolbarSpacer />
-				<Button text="{i18n>add}" type="Emphasized" press="onAddProduct" icon="sap-icon://add" />
+				<Button id="addButton" text="{i18n>add}" type="Emphasized" press="onAddProduct" icon="sap-icon://add" />
 			</Toolbar>
 		</footer>
 	</Page>

@@ -16,7 +16,7 @@
 npm run start:07   # from the repository root
 ```
 
-Tests: `npm test` runs the headless QUnit suite for this example (`webapp/test/unit/`). All validation rules live in the unit-tested `model/validator.ts` (`validateLeaveRequest` + `calcDays`) - extracted from the controller test-first. The suite also documented a latent bug: missing dates previously slipped through and produced `NaN` days; the new `error.missingDates` rule blocks that.
+Tests: `npm test` runs TWO suites headless - **unit** tests (`model/validator.ts`: `validateLeaveRequest` + `calcDays`, extracted test-first; includes the `error.missingDates` rule that blocks a former `NaN`-days bug) and the **OPA5 integration** journey: opens the real dialog, creates a leave request against the mocked OData service and verifies the refreshed list. The journeys caught **M16** - the dialog's buttons were dead because `Fragment.load` was missing `controller: this`. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
 
 The mock server simulates writes: a POST adds a row to its in-memory data, a DELETE removes it. Refresh the browser and your data is back - mocks reset, backends don't.
 
