@@ -4,6 +4,7 @@ import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageBox from "sap/m/MessageBox";
 import History from "sap/ui/core/routing/History";
 import JSONModel from "sap/ui/model/json/JSONModel";
+import { formatter } from "learn/routing/model/formatter";
 
 interface OrderLike {
 	id: string;
@@ -14,18 +15,14 @@ interface OrderLike {
  */
 export default class DetailController extends Controller {
 
+	// Thin adapters for the XML view: "." resolves here, the rules live in
+	// the tested formatter module.
 	public formatStatus(sStatus: string): string {
-		switch (sStatus) {
-			case "Shipped": return "Success";
-			case "Processing": return "Warning";
-			default: return "None";
-		}
+		return formatter.formatStatus(sStatus);
 	}
 
 	public formatTotal(nTotal: number): string {
-		return typeof nTotal === "number"
-			? new Intl.NumberFormat("en-US", { minimumFractionDigits: 2 }).format(nTotal)
-			: "";
+		return formatter.formatTotal(nTotal);
 	}
 
 	public onInit(): void {

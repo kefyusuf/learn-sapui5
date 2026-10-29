@@ -39,7 +39,7 @@ The pilot cycle in example 03 paid off immediately: the characterization tests f
 
 The second cycle (example 07) shows the *extraction* pattern: the validation rules lived inline in the controller; they were pulled into `model/validator.ts` **test-first** - including a new `error.missingDates` rule, because the tests documented that missing dates would previously flow into the day calculation and produce `NaN`.
 
-Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation). What to test next in a UI5 project: more pure modules (formatters of examples 04/05/06/08), then controller tests (sinon stubs for views/models), then OPA5 integration tests that drive whole flows.
+Covered today: example 03 (formatters + email validator), example 07 (leave-request validation + day calculation), examples 04/06/08 (formatter characterization) and example 05 (status/total formatters extracted from the controllers test-first). Next candidates: controller tests (sinon stubs for views/models), then OPA5 integration tests that drive whole flows.
 
 ## Git workflow: branch → commit → PR
 
