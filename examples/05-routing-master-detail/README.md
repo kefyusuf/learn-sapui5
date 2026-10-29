@@ -16,6 +16,8 @@
 npm run start:05   # from the repository root
 ```
 
+Tests: `npm test` runs TWO suites headless - **unit** tests (status/total formatters extracted from the controllers) and the **OPA5 navigation** journeys: press an order in the real list and verify the router lands on the right detail page (run for two different orders). See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+
 ## How a click becomes a page change
 
 1. `Component.init()` calls `this.getRouter().initialize()` - the router reads the manifest.
