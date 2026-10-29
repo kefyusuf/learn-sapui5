@@ -21,6 +21,8 @@ npm install && npm start
 
 Then open http://localhost:8081 (the start script opens it automatically).
 
+Tests: `npm test` runs TWO suites headless - **unit** tests (the greeting falls back to "world" for empty input) and an **OPA5 smoke** journey: the app boots, the greeting screen renders and the toast appears after pressing the button. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+
 ## The boot chain, step by step
 
 1. **`index.html`** loads the UI5 runtime (`resources/sap-ui-core.js`, served locally by the UI5 CLI) and maps the app namespace to this folder:
