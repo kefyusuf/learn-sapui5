@@ -9,6 +9,7 @@ import MessageToast from "sap/m/MessageToast";
 import MessageBox from "sap/m/MessageBox";
 import Table from "sap/m/Table";
 import ListBinding from "sap/ui/model/ListBinding";
+import { validateLeaveRequest, calcDays } from "learn/crud/model/validator";
 
 /**
  * @namespace learn.crud.controller
@@ -73,21 +74,20 @@ export default class AppController extends Controller {
 		const oEnd = this.byId("endPicker") as unknown as DatePicker;
 		const oNote = this.byId("noteArea") as unknown as { getValue(): string };
 
-		// Client-side validation BEFORE the server round trip.
-		if (!oEmployee.getValue().trim()) {
-			MessageBox.error(this._text("error.employee"));
-			return;
-		}
 		const sStart = oStart.getValue();
 		const sEnd = oEnd.getValue();
-		if (sStart && sEnd && sEnd < sStart) {
-			MessageBox.error(this._text("error.endBeforeStart"));
+
+		// Client-side validation BEFORE the server round trip - all rules
+		// live in the tested validator module, the controller stays thin.
+		const sErrorKey = validateLeaveRequest({
+			employee: oEmployee.getValue(),
+			startDate: sStart,
+			endDate: sEnd
+		});
+		if (sErrorKey) {
+			MessageBox.error(this._text(sErrorKey));
 			return;
 		}
-
-		const iDays = Math.round(
-			(new Date(sEnd).getTime() - new Date(sStart).getTime()) / 86400000
-		) + 1;
 
 		const oModel = this.getView()?.getModel() as ODataModel;
 		oModel.create(
@@ -96,9 +96,9 @@ export default class AppController extends Controller {
 				ID: "", // the mock server assigns the key
 				Employee: oEmployee.getValue().trim(),
 				Type: (this.byId("typeSelect") as unknown as { getSelectedKey(): string }).getSelectedKey(),
-				StartDate: sStart ? `/Date(${new Date(sStart).getTime()})/` : null,
-				EndDate: sEnd ? `/Date(${new Date(sEnd).getTime()})/` : null,
-				Days: iDays,
+				StartDate: `/Date(${new Date(sStart).getTime()})/`,
+				EndDate: `/Date(${new Date(sEnd).getTime()})/`,
+				Days: calcDays(sStart, sEnd),
 				Status: "Pending",
 				Note: oNote.getValue()
 			},
