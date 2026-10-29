@@ -30,4 +30,16 @@ sap.ui.define([
 		Then.theDetailShowsOrder("SO-1003", "Delta Logistics")
 			.and.iTeardown();
 	});
+
+	opaTest("returns to the master list via the back button", function (Given, When, Then) {
+		Given.iStartTheApp()
+			.and.iPressOnOrder("SO-1001");
+
+		Then.theDetailShowsOrder("SO-1001", "Acme Industries Ltd.");
+
+		When.iPressTheBackButton();
+
+		Then.theMasterListIsVisible()
+			.and.iTeardown();
+	});
 });

@@ -5,7 +5,6 @@ sap.ui.define([
 	"sap/ui/test/matchers/PropertyStrictEquals"
 ], function (Opa5, Press, PropertyStrictEquals) {
 	"use strict";
-
 	return Opa5.extend("learn.routing.test.integration.pages.MasterDetailPage", {
 
 		iStartTheApp: function () {
@@ -19,6 +18,17 @@ sap.ui.define([
 
 		iTeardown: function () {
 			return this.iTeardownMyUIComponent();
+		},
+
+		iPressTheBackButton: function () {
+			return this.waitFor({
+				viewName: "Detail",
+				// The Page auto-creates the nav button and it is the ONLY
+				// sap.m.Button in this view - no matcher needed.
+				controlType: "sap.m.Button",
+				actions: new Press(),
+				errorMessage: "Did not find the back button on the detail page"
+			});
 		},
 
 		iPressOnOrder: function (sOrderId) {
@@ -45,6 +55,19 @@ sap.ui.define([
 						`detail shows customer ${sCustomer}`);
 				},
 				errorMessage: "Did not reach the detail page"
+			});
+		},
+
+		theMasterListIsVisible: function () {
+			return this.waitFor({
+				viewName: "Master",
+				id: "orderList",
+				// default visible: true - only succeeds when the master page
+				// is actually displayed again
+				success: function () {
+					Opa5.assert.ok(true, "back on the master list");
+				},
+				errorMessage: "The master list is not visible after back navigation"
 			});
 		}
 	});
