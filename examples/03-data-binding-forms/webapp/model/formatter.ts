@@ -3,16 +3,17 @@
  *
  * Formatters never touch the model - they receive bound values and return
  * display strings. Keeping them in a separate module makes them reusable
- * and unit-testable.
+ * and unit-testable (see webapp/test/unit/model/formatter.test.js).
  */
-const oPhoneFormat = new Intl.NumberFormat("en-US", {
+const oNumberFormat = new Intl.NumberFormat("en-US", {
 	useGrouping: true
 });
 
 export const formatter = {
 
 	/**
-	 * 0555112233 -> "0555 112 23 33"
+	 * Groups a 10-digit phone number as "0555 112 233" (4-3-3).
+	 * Input of any other digit length is passed through unchanged.
 	 */
 	formatPhone(sPhone: string): string {
 		if (!sPhone) {
@@ -22,7 +23,7 @@ export const formatter = {
 		if (sDigits.length !== 10) {
 			return sPhone;
 		}
-		return `${sDigits.slice(0, 4)} ${sDigits.slice(4, 7)} ${sDigits.slice(7, 9)} ${sDigits.slice(9)}`;
+		return `${sDigits.slice(0, 4)} ${sDigits.slice(4, 7)} ${sDigits.slice(7, 10)}`;
 	},
 
 	/**
@@ -32,11 +33,11 @@ export const formatter = {
 		if (typeof nRevenue !== "number") {
 			return "";
 		}
-		return `${oPhoneFormat.format(nRevenue)} EUR`;
+		return `${oNumberFormat.format(nRevenue)} EUR`;
 	},
 
 	/**
-	 * Used as a color/state formatter for the status text.
+	 * Maps the VAT flag to an ObjectStatus state.
 	 */
 	formatVatState(bVat: boolean): string {
 		return bVat ? "Success" : "Warning";
