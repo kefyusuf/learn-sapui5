@@ -84,7 +84,8 @@ Testing the FE List Report with standalone OPA5 **does not work yet** - document
 
 - The FE mock server is **server-side middleware** (ui5.yaml) - unlike examples 06/07, no page-level boot is needed; the data layer was verified working (metadata 200, `$batch` returns all 10 products).
 - **Blocker**: booting the FE `AppComponent` via `iStartMyUIComponent` stalls in headless runs. The loader's late autoconfig resolves **app-namespace requires to `/resources/<ns>/...` (404)** even though the page's `resource-roots` mapping is correct (`sap.ui.require.toUrl` returns the right URL seconds later). A self-contained journey (no app-namespace requires at all) still stalls at component boot.
-- Candidate next steps: the official **FE test harness** (`sap/fe/test/JourneyRunner` with an FLP sandbox iframe), or investigating the loader autoconfig merge order for FE apps.
+- **Second attempt (frame-based)**: `iStartMyAppInAFrame({ source: "/index.html" })` with `autoWait: false` (FE apps schedule continuous timers - the autoWaiter never reaches its syncpoint otherwise) and generous timeouts - **the iframe is never created and there are zero console errors**. A clean, environment-specific blocker.
+- Candidate next steps: the official **FE test harness** (`sap/fe/test/JourneyRunner` with an FLP sandbox iframe) on a headed browser, or investigating the loader autoconfig merge order for FE apps.
 
 For now, FE apps in this repo are verified by the manual headless technique: CDP-poll `index.html` until a product name appears in the body text (real time; virtual-time budgets expire before the FE boot completes).
 

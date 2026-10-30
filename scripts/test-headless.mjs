@@ -32,7 +32,7 @@ const TESTPAGES = [
 	"test/unit/unitTests.qunit.html",
 	"test/integration/opaTests.qunit.html"
 ];
-const PAGE_TIMEOUT_MS = 180000;
+const PAGE_TIMEOUT_MS = 300000;
 const POLL_INTERVAL_MS = 1500;
 
 const TARGETS = [
