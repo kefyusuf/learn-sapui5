@@ -123,6 +123,8 @@ export default class AppController extends Controller {
 		const oTable = this.byId("requestsTable") as Table;
 		const oContext = oTable.getSelectedItem()?.getBindingContext();
 		if (!oContext) {
+			// Visible feedback instead of a silent return (test-first, docs/12).
+			MessageBox.information(this._text("error.selectRow"));
 			return;
 		}
 		const sID = oContext.getProperty("ID") as string;
