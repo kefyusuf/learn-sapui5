@@ -44,7 +44,8 @@ const TARGETS = [
 	{ prefix: "06", dir: "06-odata-mockserver", port: 8086 },
 	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 },
 	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 },
-	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 }
+	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
+	{ prefix: "10", dir: "10-odata-v4", port: 8091 }
 ];
 
 const filter = process.argv[2];

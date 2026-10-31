@@ -1,6 +1,6 @@
 # 04 - OData and Models
 
-OData is the protocol SAP backends speak. UI5 has first-class models for it. See it live in examples [06](../examples/06-odata-mockserver/README.md), [07](../examples/07-crud-leave-request/README.md) and [08](../examples/08-real-odata-northwind/README.md).
+OData is the protocol SAP backends speak. UI5 has first-class models for it. See it live in examples [06](../examples/06-odata-mockserver/README.md), [07](../examples/07-crud-leave-request/README.md), [08](../examples/08-real-odata-northwind/README.md) and [10](../examples/10-odata-v4/README.md).
 
 ## OData in one paragraph
 

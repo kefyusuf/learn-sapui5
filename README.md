@@ -30,6 +30,7 @@ Ports 8081-8087 and 8089-8090 serve examples 01-09 (08 runs on 8090 - port 8088 
 | [07](examples/07-crud-leave-request/README.md) | crud-leave-request | Leave request self-service | Full CRUD, validation, confirm flows | mocked |
 | [08](examples/08-real-odata-northwind/README.md) | real-odata-northwind | Live product list | Real backend, CORS + proxy | **live** |
 | [09](examples/09-fiori-elements-products/README.md) | fiori-elements-products | Product List Report | Fiori Elements from annotations | mocked (V4) |
+| [10](examples/10-odata-v4/README.md) | odata-v4 | Sales orders on V4 | OData V4 model, $-prefixed options, async-first | mocked (V4) |
 
 Start at 01 and go in order - each example only uses what the previous ones taught. Full roadmap and time estimates: [docs/11-learning-path.md](docs/11-learning-path.md).
 
