@@ -145,8 +145,10 @@ async function runPage(url) {
 			resultText = (await evalJs(
 				"(document.getElementById('qunit-testresult') || {}).textContent || ''"
 			)) || "";
-			// QUnit prints results only when the run is finished.
-			if (/tests? completed/.test(resultText) || /assertions? of/.test(resultText)) break;
+			// QUnit briefly reports "0 tests completed" while journeys
+			// register late (autostart: false) - only a NON-zero count or
+			// the passing summary means the run is finished.
+			if (/([1-9]\d*)\s+tests?\s+completed/.test(resultText) || /([1-9]\d*)\s+assertions?\s+of/.test(resultText)) break;
 		}
 
 		const failures = (await evalJs(

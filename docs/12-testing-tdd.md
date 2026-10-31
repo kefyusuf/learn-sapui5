@@ -77,6 +77,9 @@ The example 03 journey found **M15** on its first run: the save button it was su
 - **Pressing a list item**: the old `ItemMatcher` was removed from UI5 - filter with `controlType: "sap.m.StandardListItem"` + `new PropertyStrictEquals({ name: "title", value: ... })` and let `Press` act on the matched item (example 05 journey).
 - **`id` + `controlType` form an AND pipeline** - `waitFor({ id: "ordersTable", controlType: "sap.m.ColumnListItem" })` can never match (the id is the table, the controlType wants its rows). Drop the id and filter rows by **`new BindingPath({ path: "/SalesOrderSet('SO-1002')" })`** - the OData-idiomatic row matcher (example 06 journey).
 - **The Page's auto nav button has no id** - it is the only `sap.m.Button` in the detail view, so `waitFor({ viewName: "Detail", controlType: "sap.m.Button", actions: new Press() })` suffices (example 05 back journey). Deep-link journeys (`iStartMyUIComponent` + `hash`) need more investigation for standalone boots - follow-up.
+- **Controller tests: stub the controller's OWN `byId`** (`sinon.stub(oController, "byId")`) - a view-less controller resolves controls through it; stubbing the fake *view's* byId does nothing (example 07 delete-flow tests).
+- **Inject async preloaded state directly**: the controller preloads the i18n bundle fire-and-forget in `onInit` - tests inject the fake bundle straight onto the private field instead of racing the promise.
+- **Runner**: QUnit briefly reports "0 tests completed" while late-registered journeys load - the runner only accepts a non-zero test count as completion.
 
 ## Fiori Elements (example 09): open research item
 
