@@ -31,6 +31,13 @@ sap.ui.define([
 			.and.iTeardown();
 	});
 
+	opaTest("deep-links straight into a detail page from the hash", function (Given, When, Then) {
+		Given.iStartTheAppAt("detail/SO-1002");
+
+		Then.theDetailShowsOrder("SO-1002", "Borealis Retail Group")
+			.and.iTeardown();
+	});
+
 	opaTest("returns to the master list via the back button", function (Given, When, Then) {
 		Given.iStartTheApp()
 			.and.iPressOnOrder("SO-1001");

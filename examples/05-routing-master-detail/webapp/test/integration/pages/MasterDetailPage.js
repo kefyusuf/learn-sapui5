@@ -16,6 +16,18 @@ sap.ui.define([
 			});
 		},
 
+		iStartTheAppAt: function (sHash) {
+			// iStartMyUIComponent supports hash (Opa5.js docs): the hash is
+			// set BEFORE the component boots, so the router deep-links.
+			return this.iStartMyUIComponent({
+				componentConfig: {
+					name: "learn.routing",
+					async: true
+				},
+				hash: sHash
+			});
+		},
+
 		iTeardown: function () {
 			return this.iTeardownMyUIComponent();
 		},

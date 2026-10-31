@@ -16,7 +16,7 @@
 npm run start:05   # from the repository root
 ```
 
-Tests: `npm test` runs TWO suites headless - **unit** tests (status/total formatters extracted from the controllers) and THREE **OPA5 navigation** journeys: press an order in the real list and verify the router lands on the right detail page (two different orders), then press the back button and verify the master list is displayed again. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+Tests: `npm test` runs TWO suites headless - **unit** tests (status/total formatters extracted from the controllers) and FOUR **OPA5 navigation** journeys: navigate to two different orders, **deep-link straight into a detail page from the hash** (bookmark simulation) and return to the master list via the back button. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
 
 ## How a click becomes a page change
 
