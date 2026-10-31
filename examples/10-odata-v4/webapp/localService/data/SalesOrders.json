@@ -1,0 +1,5 @@
+[
+	{ "ID": "SO-2001", "Customer": "Acme Industries Ltd.", "OrderDate": "2026-10-12", "Status": "Shipped", "Total": "4820.00" },
+	{ "ID": "SO-2002", "Customer": "Borealis Retail Group", "OrderDate": "2026-10-18", "Status": "Processing", "Total": "898.00" },
+	{ "ID": "SO-2003", "Customer": "Delta Logistics", "OrderDate": "2026-10-21", "Status": "Open", "Total": "1533.90" }
+]
