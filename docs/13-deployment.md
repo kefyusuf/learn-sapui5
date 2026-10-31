@@ -68,6 +68,8 @@ npx serve dist          # or any static server; open the printed URL
 
 The transpiled app behaves identically to `ui5 serve` - that equivalence is the whole point of the build.
 
+**CI does the same on every PR**: the workflow builds **all 10 workspaces** and uploads every `dist/` as a downloadable artifact (`ui5-dist`) - a broken build can never reach `main`, and every PR produces deployable binaries you can download and try.
+
 ## Checklist
 
 - [ ] `npm run lint`, `npm run typecheck`, `npm test` green (CI enforces this on every PR)
