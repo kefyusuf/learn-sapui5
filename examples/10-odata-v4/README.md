@@ -44,3 +44,5 @@ npm run start:10   # from the repository root
 
 - Compare this controller with example 06's side by side - count the differences.
 - Switch the growing list to `operationMode: "Client"` and observe the request behavior in the network tab.
+
+Tests: `npm test` runs TWO suites headless - **unit** tests (formatters) and **three OPA5 journeys**: select an order → the `$expand`-ed items land in the detail table (two orders), and the **V4 create flow**: dialog → `ODataListBinding.create` → batch submit → the new row appears **without any manual refresh** (a V4 behavior that differs from V2). See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
