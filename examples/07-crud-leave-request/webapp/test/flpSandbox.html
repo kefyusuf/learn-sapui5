@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FLP Sandbox - Leave Requests</title>
+
+	<!-- The local FLP sandbox (CDM bootstrap, UI5 1.152):
+	     applications live in services.LaunchPage.adapter.config - they
+	     render as tiles on the home page and open in the shell. -->
+	<script>
+		window["sap-ushell-config"] = {
+			defaultRenderer: "fiori2",
+			services: {
+				LaunchPage: {
+					adapter: {
+						config: {
+							applications: {
+								"leave-requests": {
+									title: "Leave Requests",
+									description: "Leave request CRUD app",
+									additionalInformation: "SAPUI5.Component=learn.crud",
+									applicationType: "URL",
+									url: "../"
+								}
+							}
+						}
+					}
+				}
+			}
+		};
+	</script>
+	<script src="/resources/sap/ushell/bootstrap/cdm.js"></script>
+	<script id="sap-ui-bootstrap"
+			src="/resources/sap-ui-core.js"
+			data-sap-ui-resource-roots='{
+				"learn.crud": "../"
+			}'
+			data-sap-ui-theme="sap_horizon"
+			data-sap-ui-compat-version="edge"
+			data-sap-ui-libs="sap.m"
+			data-sap-ui-async="true"></script>
+
+	<!-- The CDM boot renders the shell + home page with the registered
+	     tiles on its own - no createRenderer call is needed. -->
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>
