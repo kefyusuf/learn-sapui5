@@ -41,7 +41,7 @@ Total: roughly 3-4 focused days to the end of the path.
 
 ## What to learn next (beyond this repo)
 
-- **Deployment**: build with `ui5 build` and deploy to SAP BTP / an ABAP system.
+- **Deployment**: build with `ui5 build` and deploy to SAP BTP / an ABAP system - see [13-deployment.md](13-deployment.md).
 - **Fiori launchpad integration**: app descriptors, tile configuration, FLP sandbox for local development.
 - **Testing**: QUnit/OPA5 (UI5's test frameworks) and `ui5-test-runner`.
 - **RAP / CAP backends**: build your own OData V4 service that example-09-style FE apps consume.
