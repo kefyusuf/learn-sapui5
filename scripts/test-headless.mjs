@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Headless QUnit/OPA5 runner for the examples in this repo.
+ * Headless QUnit/OPA5/smoke runner for the examples in this repo.
  *
- * For each example it starts `ui5 serve`, opens the test page in headless
- * Chrome via the DevTools protocol and POLLS the QUnit result element in
- * real time until tests finish (OPA5 journeys need real time - virtual
- * time budgets would expire before the component boots). Exits non-zero
- * on any failure. No extra test dependencies.
+ * For each example it starts `ui5 serve`, opens the test pages in
+ * headless Chrome via the DevTools protocol and POLLS in real time:
+ *   - QUnit pages: until the result element reports the finished run
+ *   - smoke pages: until the body text contains the expected marker
+ * Exits non-zero on any failure. No extra test dependencies.
  *
  * Usage:
  *   node scripts/test-headless.mjs           # all examples with tests
@@ -42,7 +42,8 @@ const TARGETS = [
 	{ prefix: "04", dir: "04-controls-lists-dialogs", port: 8084 },
 	{ prefix: "05", dir: "05-routing-master-detail", port: 8085 },
 	{ prefix: "06", dir: "06-odata-mockserver", port: 8086 },
-	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 },
+	{ prefix: "07", dir: "07-crud-leave-request", port: 8087,
+		smoke: { page: "test/flpSandbox.html", marker: "Leave Requests" } },
 	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 },
 	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
 	{ prefix: "10", dir: "10-odata-v4", port: 8091 }
@@ -72,11 +73,11 @@ async function waitForServer(url, tries = 60) {
 }
 
 /**
- * Opens the page in headless Chrome (DevTools protocol) and polls the
- * QUnit result element until tests are done. Returns the final result
- * element text plus the names of failing tests.
+ * Opens the page via the DevTools protocol and polls until done:
+ *  - mode "qunit": the result element reports the finished run
+ *  - mode "smoke": the body text contains the expected marker
  */
-async function runPage(url) {
+async function runPage(url, sMode, sMarker) {
 	const profile = mkdtempSync(join(tmpdir(), "ui5-test-"));
 	const isWin = process.platform === "win32";
 	const chrome = spawn(
@@ -96,7 +97,6 @@ async function runPage(url) {
 	});
 
 	try {
-		// Wait for the DevTools endpoint to announce itself.
 		for (let i = 0; i < 100 && !wsUrl; i++) {
 			await new Promise((r) => setTimeout(r, 100));
 		}
@@ -105,7 +105,6 @@ async function runPage(url) {
 		const httpPort = /ws:\/\/127\.0\.0\.1:(\d+)\//.exec(wsUrl)?.[1];
 		if (!httpPort) throw new Error("Cannot parse the DevTools port");
 
-		// The browser target speaks the page lifecycle; find the page target.
 		const listRaw = await new Promise((res, rej) => {
 			http.get({ host: "127.0.0.1", port: Number(httpPort), path: "/json/list" }, (r) => {
 				let d = "";
@@ -141,47 +140,52 @@ async function runPage(url) {
 
 		const started = Date.now();
 		let resultText = "";
+		let smokeHit = false;
 		while (Date.now() - started < PAGE_TIMEOUT_MS) {
 			await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
-			resultText = (await evalJs(
-				"(document.getElementById('qunit-testresult') || {}).textContent || ''"
-			)) || "";
-			// QUnit briefly reports "0 tests completed" while journeys
-			// register late (autostart: false) - only a NON-zero count or
-			// the passing summary means the run is finished.
-			if (/([1-9]\d*)\s+tests?\s+completed/.test(resultText) || /([1-9]\d*)\s+assertions?\s+of/.test(resultText)) break;
+			if (sMode === "smoke") {
+				smokeHit = (await evalJs(
+					`document.body.innerText.includes(${JSON.stringify(sMarker)})`
+				)) === true;
+				if (smokeHit) break;
+			} else {
+				resultText = (await evalJs(
+					"(document.getElementById('qunit-testresult') || {}).textContent || ''"
+				)) || "";
+				// QUnit briefly reports "0 tests completed" while journeys
+				// register late (autostart: false) - only a NON-zero count or
+				// the passing summary means the run is finished.
+				if (/([1-9]\d*)\s+tests?\s+completed/.test(resultText) || /([1-9]\d*)\s+assertions?\s+of/.test(resultText)) break;
+			}
 		}
 
-		const failures = (await evalJs(
-			"JSON.stringify([...document.querySelectorAll('li.fail .test-name')].map(e => e.textContent.trim()))"
-		)) || "[]";
-		const messages = (await evalJs(
-			"JSON.stringify([...document.querySelectorAll('li.fail .test-message')].map(e => e.textContent.trim().slice(0, 300)))"
-		)) || "[]";
+		let failures = [];
+		if (sMode === "qunit") {
+			failures = JSON.parse((await evalJs(
+				"JSON.stringify([...document.querySelectorAll('li.fail .test-name')].map(e => e.textContent.trim()))"
+			)) || "[]");
+		}
 
 		ws.close();
-		return { text: resultText.trim(), failures: JSON.parse(failures), messages: JSON.parse(messages) };
-		} finally {
-			if (isWin) {
-				try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
-			} else {
-				try { process.kill(-chrome.pid, "SIGTERM"); } catch { chrome.kill("SIGTERM"); }
-			}
-			// Best effort: Chrome may hold file locks briefly after being killed.
-			try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch { /* leave temp dir */ }
+		return { mode: sMode, resultText: resultText.trim(), smokeHit, failures };
+	} finally {
+		if (isWin) {
+			try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
+		} else {
+			try { process.kill(-chrome.pid, "SIGTERM"); } catch { chrome.kill("SIGTERM"); }
 		}
+		// Best effort: Chrome may hold file locks briefly after being killed.
+		try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch { /* leave temp dir */ }
+	}
 }
 
 function parseResults(oPage) {
-	const ran = Boolean(oPage.text);
-	// QUnit 2.3's result element has two phrasings:
-	// all pass:  "N assertions of N passed, 0 failed."
-	// failures:  "N tests completed in X ms, with F failed, ..."
-	const failedMatch = /with\s+(\d+)\s+failed/.exec(oPage.text);
+	const ran = oPage.mode === "qunit" && Boolean(oPage.resultText);
+	const failedMatch = /with\s+(\d+)\s+failed/.exec(oPage.resultText);
 	return {
 		run: ran,
 		passed: ran && (!failedMatch || Number(failedMatch[1]) === 0),
-		summary: ran ? oPage.text.replace(/\s+/g, " ").trim() : "QUnit did not report a result",
+		summary: ran ? oPage.resultText.replace(/\s+/g, " ").trim() : "QUnit did not report a result",
 		failures: oPage.failures
 	};
 }
@@ -198,38 +202,48 @@ let anyFailed = false;
 
 for (const t of targets) {
 	const cwd = join(ROOT, "examples", t.dir);
-	for (const sPage of TESTPAGES) {
-		if (!existsSync(join(cwd, "webapp", sPage))) {
+
+	// Collect the pages to exercise for this target.
+	const entries = TESTPAGES.filter((p) => existsSync(join(cwd, "webapp", p)))
+		.map((p) => ({ page: p, mode: "qunit" }));
+	if (t.smoke && existsSync(join(cwd, "webapp", t.smoke.page))) {
+		entries.push({ page: t.smoke.page, mode: "smoke", marker: t.smoke.marker });
+	}
+	if (entries.length === 0) {
+		continue;
+	}
+
+	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+	const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
+		cwd, stdio: "ignore", shell: process.platform === "win32",
+		// On Linux the child becomes a group leader so stopServer can kill
+		// the whole tree (npx -> ui5 -> ...) with one signal.
+		detached: process.platform !== "win32"
+	});
+
+	try {
+		if (!(await waitForServer(`http://localhost:${t.port}/`))) {
+			console.log(`- ${t.prefix} ${t.dir}: FAILED, server did not come up`);
+			anyFailed = true;
 			continue;
 		}
 
-		console.log(`- ${t.prefix} ${t.dir}: ${sPage} (port ${t.port})...`);
-		const npx = process.platform === "win32" ? "npx.cmd" : "npx";
-		const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
-			cwd, stdio: "ignore", shell: process.platform === "win32",
-			// On Linux the child becomes a group leader so stopServer can kill
-			// the whole tree (npx -> ui5 -> ...) with one signal.
-			detached: process.platform !== "win32"
-		});
-
-		try {
-			const url = `http://localhost:${t.port}/${sPage}`;
-			const up = await waitForServer(url);
-			if (!up) {
-				console.log(`  FAILED: server did not come up`);
-				anyFailed = true;
-				continue;
+		for (const e of entries) {
+			const url = `http://localhost:${t.port}/${e.page}`;
+			console.log(`- ${t.prefix} ${t.dir}: ${e.page}...`);
+			const oPage = await runPage(url, e.mode, e.marker);
+			if (e.mode === "smoke") {
+				if (!oPage.smokeHit) anyFailed = true;
+				console.log(`  ${oPage.smokeHit ? "PASS" : "FAIL"}: marker "${e.marker}" ${oPage.smokeHit ? "found" : "never appeared"}`);
+			} else {
+				const r = parseResults(oPage);
+				if (!r.run || !r.passed) anyFailed = true;
+				console.log(`  ${r.run && r.passed ? "PASS" : "FAIL"}: ${r.summary}`);
+				for (const f of r.failures) console.log(`    failing: ${f}`);
 			}
-
-			const oPage = await runPage(url);
-			const r = parseResults(oPage);
-			if (!r.run || !r.passed) anyFailed = true;
-			console.log(`  ${r.run && r.passed ? "PASS" : "FAIL"}: ${r.summary}`);
-			for (const f of r.failures) console.log(`    failing: ${f}`);
-			for (const m of r.messages ?? []) console.log(`    message: ${m.slice(0, 220)}`);
-		} finally {
-			stopServer(server);
 		}
+	} finally {
+		stopServer(server);
 	}
 }
 

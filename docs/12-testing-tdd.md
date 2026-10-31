@@ -102,6 +102,17 @@ For now, FE apps in this repo are verified by the manual headless technique: CDP
 - **`no-globals` in XML views** (examples 03/07): binding `type: 'sap.ui.model.type.Float'` references the global `sap` - fixed with `core:require` on the control (`core:require="{ FloatType: 'sap/ui/model/type/Float' }"` + `type: 'FloatType'`).
 - **`no-removed-manifest-property`** (example 05): `routing.config.async` no longer exists in manifest v2 (routing is always async) - removed, navigation journeys re-verified.
 
+## FLP sandbox (launchpad integration): open research item
+
+Hosting the apps in a **local FLP sandbox** (the real launchpad shell) was attempted for example 07. Findings so far, documented for the next attempt:
+
+- UI5 **1.152 removed the classic `sap/ushell/bootstrap/sandbox.js`** - the local sandbox boots via the **CDM bootstrap** (`sap/ushell/bootstrap/cdm.js`, served and verified).
+- The CDM sandbox moved the application registrations **into the renderer config** (`renderers.fiori2.componentData.config.applications`) - the classic top-level `applications` shape no longer applies, and `sap.ushell.Container` is only available after the CDM boot tasks finish.
+- The first attempt (classic config shape + `createRenderer` in `attachInit`) died with `sap.ushell.Container is not defined`.
+- Candidate next steps: use a **Fiori-tools-generated `flpSandbox.html`/`flpSandbox.js`** for 1.120+ as the reference (they ship the correct CDM config shape), or research the CDM boot-task order.
+
+The runner gained a generic **smoke mode** meanwhile (`smoke: { page, marker }` on a target - polls the rendered body text for a marker), which is exactly the right tool for a working sandbox page once the boot shape is right.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.
