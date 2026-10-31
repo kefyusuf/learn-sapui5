@@ -39,3 +39,14 @@ jobs:
 
       - name: Unit tests (headless QUnit)
         run: npm test
+
+      - name: Build (ui5 build, all workspaces)
+        run: npm run build --workspaces --if-present
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui5-dist
+          path: examples/*/dist
+          retention-days: 7
+          if-no-files-found: error
