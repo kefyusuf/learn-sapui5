@@ -16,6 +16,8 @@
 					<headerToolbar>
 						<Toolbar>
 							<Title text="{i18n>orders.title}" level="H4" />
+							<ToolbarSpacer />
+							<Button id="addOrderButton" text="{i18n>add}" press="onAddOrder" />
 						</Toolbar>
 					</headerToolbar>
 					<columns>

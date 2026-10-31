@@ -1,0 +1,19 @@
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core">
+	<Dialog id="addOrderDialog"
+			title="{i18n>addDialog.title}"
+			contentWidth="22rem">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<Label text="{i18n>addDialog.id}" labelFor="idInput" />
+				<Input id="idInput" placeholder="SO-2004" maxLength="10" />
+				<Label text="{i18n>addDialog.customer}" labelFor="customerInput" />
+				<Input id="customerInput" placeholder="Acme Industries Ltd." />
+			</VBox>
+		</content>
+		<buttons>
+			<Button text="{i18n>addDialog.cancel}" press="onCancelOrder" />
+			<Button id="dialogCreate" text="{i18n>addDialog.create}" type="Emphasized" press="onCreateOrder" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>
