@@ -3,8 +3,7 @@
 QUnit.config.autostart = false;
 
 sap.ui.require([
-	"learn/odatav4/test/integration/OrderItemsJourney",
-	"learn/odatav4/test/integration/CreateOrderJourney"
+	"learn/odatav4/test/integration/OrdersJourneys"
 ], function () {
 	"use strict";
 	QUnit.start();
