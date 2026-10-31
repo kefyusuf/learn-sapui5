@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ui5 serve --port 8090 -o index.html",
     "ts-typecheck": "tsc --noEmit",
+    "lint": "ui5lint -q",
     "build": "ui5 build --clean-dest --dest dist"
   },
   "devDependencies": {

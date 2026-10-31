@@ -42,8 +42,11 @@
 						<!-- One-way with formatter: model value -> pretty display -->
 						<Text text="{path: '/customer/phone', formatter: '.formatPhone'}" />
 						<Label text="{i18n>label.revenue}" labelFor="revenueInput" />
-						<!-- Two-way with a display formatter and input data type -->
-						<Input id="revenueInput" value="{path: '/customer/revenue', type: 'sap.ui.model.type.Float'}"
+						<!-- Two-way with a display formatter and input data type.
+						     core:require makes the type module addressable without
+						     touching the global `sap` (ui5lint no-globals). -->
+						<Input id="revenueInput" core:require="{ FloatType: 'sap/ui/model/type/Float' }"
+							   value="{path: '/customer/revenue', type: 'FloatType'}"
 							   description="EUR" valueLiveUpdate="true" />
 						<Text text="{path: '/customer/revenue', formatter: '.formatRevenue'}" />
 						<Label text="{i18n>label.vat}" labelFor="vatInput" />

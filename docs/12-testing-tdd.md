@@ -93,6 +93,14 @@ Testing the FE List Report with standalone OPA5 **does not work yet** - document
 
 For now, FE apps in this repo are verified by the manual headless technique: CDP-poll `index.html` until a product name appears in the body text (real time; virtual-time budgets expire before the FE boot completes).
 
+## Static analysis: ui5lint
+
+`npm run lint` runs `@ui5/linter` across all workspaces (CI gates on it too, `-q` reports errors only - the inline bootstrap scripts of the teaching examples intentionally trigger `csp-unsafe-inline-script` warnings). Two real findings it enforced here, both fixed:
+
+- **Manifest v2 migration** (example 09): `_version` bumped from 1.12.0 to 2.0.0, the deprecated `synchronizationMode` model setting removed. FE boot re-verified afterwards.
+- **`no-globals` in XML views** (examples 03/07): binding `type: 'sap.ui.model.type.Float'` references the global `sap` - fixed with `core:require` on the control (`core:require="{ FloatType: 'sap/ui/model/type/Float' }"` + `type: 'FloatType'`).
+- **`no-removed-manifest-property`** (example 05): `routing.config.async` no longer exists in manifest v2 (routing is always async) - removed, navigation journeys re-verified.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.

@@ -14,11 +14,15 @@
     "start:08": "npm run start --workspace examples/08-real-odata-northwind",
     "start:09": "npm run start --workspace examples/09-fiori-elements-products",
     "test": "node scripts/test-headless.mjs",
+    "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run ts-typecheck --workspaces --if-present"
   },
   "workspaces": [
     "examples/*"
   ],
+  "devDependencies": {
+    "@ui5/linter": "1.23.7"
+  },
   "allowScripts": {
     "ui5-tooling-transpile@3.13.1": true
   }
