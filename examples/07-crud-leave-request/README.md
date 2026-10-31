@@ -16,7 +16,7 @@
 npm run start:07   # from the repository root
 ```
 
-Tests: `npm test` runs TWO suites headless - **unit** tests (`model/validator.ts`: `validateLeaveRequest` + `calcDays`, extracted test-first; includes the `error.missingDates` rule that blocks a former `NaN`-days bug) and **controller tests for the delete flow** (no selection → visible `error.selectRow` information instead of a silent return; confirmation → `remove` on the selected path → refresh + toast) plus the **OPA5 integration** journey: opens the real dialog, creates a leave request against the mocked OData service and verifies the refreshed list. The journeys caught **M16** - the dialog's buttons were dead because `Fragment.load` was missing `controller: this`. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
+Tests: `npm test` runs TWO suites headless - **unit** tests (`model/validator.ts` + controller tests for the create and delete flows: visible validation feedback, confirmation with the interpolated id, remove on the selected path) and TWO **OPA5 integration** journeys: create a leave request through the real dialog and **delete the selected request through the real MessageBox** (`searchOpenDialogs`) against the mocked OData service. The journeys caught **M16** - the dialog's buttons were dead because `Fragment.load` was missing `controller: this`. See [docs/12-testing-tdd.md](../../docs/12-testing-tdd.md).
 
 The mock server simulates writes: a POST adds a row to its in-memory data, a DELETE removes it. Refresh the browser and your data is back - mocks reset, backends don't.
 
