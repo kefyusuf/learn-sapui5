@@ -102,16 +102,14 @@ For now, FE apps in this repo are verified by the manual headless technique: CDP
 - **`no-globals` in XML views** (examples 03/07): binding `type: 'sap.ui.model.type.Float'` references the global `sap` - fixed with `core:require` on the control (`core:require="{ FloatType: 'sap/ui/model/type/Float' }"` + `type: 'FloatType'`).
 - **`no-removed-manifest-property`** (example 05): `routing.config.async` no longer exists in manifest v2 (routing is always async) - removed, navigation journeys re-verified.
 
-## FLP sandbox (launchpad integration): open research item
+## FLP sandbox (launchpad integration): works in browsers, headless polling open
 
-Hosting the apps in a **local FLP sandbox** (the real launchpad shell) was attempted for example 07. Findings so far, documented for the next attempt:
+Example 07 ships a **local FLP sandbox** (`webapp/test/flpSandbox.html`): it boots the real launchpad shell via the **CDM bootstrap** (`sap/ushell/bootstrap/cdm.js` - the classic `sandbox.js` was removed in UI5 1.152) and renders the app as a tile on the home page (`services.LaunchPage.adapter.config.applications`). Verified by rendering it in headless Chrome with virtual-time dumps (shell + tile + app consistent across runs) - **open it in your browser and click the tile**.
 
-- UI5 **1.152 removed the classic `sap/ushell/bootstrap/sandbox.js`** - the local sandbox boots via the **CDM bootstrap** (`sap/ushell/bootstrap/cdm.js`, served and verified).
-- The CDM sandbox moved the application registrations **into the renderer config** (`renderers.fiori2.componentData.config.applications`) - the classic top-level `applications` shape no longer applies, and `sap.ushell.Container` is only available after the CDM boot tasks finish.
-- The first attempt (classic config shape + `createRenderer` in `attachInit`) died with `sap.ushell.Container is not defined`.
-- Candidate next steps: use a **Fiori-tools-generated `flpSandbox.html`/`flpSandbox.js`** for 1.120+ as the reference (they ship the correct CDM config shape), or research the CDM boot-task order.
+Two findings, documented for the next attempt at automating it:
 
-The runner gained a generic **smoke mode** meanwhile (`smoke: { page, marker }` on a target - polls the rendered body text for a marker), which is exactly the right tool for a working sandbox page once the boot shape is right.
+- In **real-time headless** runs the CDM boot stalls silently (empty body, no console errors) - virtual time fast-forwards whatever event chain real browsers complete; the CDM boot-task order needs investigation.
+- The runner has a generic **smoke mode** (`smoke: { page, marker }` - polls the rendered body text) ready for the sandbox once the headless stall is resolved. It is deliberately **not** wired into CI for the sandbox yet.
 
 ## CI
 

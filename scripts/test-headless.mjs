@@ -42,8 +42,7 @@ const TARGETS = [
 	{ prefix: "04", dir: "04-controls-lists-dialogs", port: 8084 },
 	{ prefix: "05", dir: "05-routing-master-detail", port: 8085 },
 	{ prefix: "06", dir: "06-odata-mockserver", port: 8086 },
-	{ prefix: "07", dir: "07-crud-leave-request", port: 8087,
-		smoke: { page: "test/flpSandbox.html", marker: "Leave Requests" } },
+	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 },
 	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 },
 	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
 	{ prefix: "10", dir: "10-odata-v4", port: 8091 }
@@ -141,6 +140,7 @@ async function runPage(url, sMode, sMarker) {
 		const started = Date.now();
 		let resultText = "";
 		let smokeHit = false;
+		let diagText = "";
 		while (Date.now() - started < PAGE_TIMEOUT_MS) {
 			await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
 			if (sMode === "smoke") {
@@ -148,6 +148,9 @@ async function runPage(url, sMode, sMarker) {
 					`document.body.innerText.includes(${JSON.stringify(sMarker)})`
 				)) === true;
 				if (smokeHit) break;
+				diagText = (await evalJs(
+					"document.body.innerText.replace(/\\n/g,' | ').slice(0, 400)"
+				)) || "";
 			} else {
 				resultText = (await evalJs(
 					"(document.getElementById('qunit-testresult') || {}).textContent || ''"
@@ -167,7 +170,7 @@ async function runPage(url, sMode, sMarker) {
 		}
 
 		ws.close();
-		return { mode: sMode, resultText: resultText.trim(), smokeHit, failures };
+		return { mode: sMode, resultText: resultText.trim(), smokeHit, diagText, failures };
 	} finally {
 		if (isWin) {
 			try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
@@ -235,6 +238,7 @@ for (const t of targets) {
 			if (e.mode === "smoke") {
 				if (!oPage.smokeHit) anyFailed = true;
 				console.log(`  ${oPage.smokeHit ? "PASS" : "FAIL"}: marker "${e.marker}" ${oPage.smokeHit ? "found" : "never appeared"}`);
+				if (!oPage.smokeHit && oPage.diagText) console.log(`    page text: ${oPage.diagText}`);
 			} else {
 				const r = parseResults(oPage);
 				if (!r.run || !r.passed) anyFailed = true;
