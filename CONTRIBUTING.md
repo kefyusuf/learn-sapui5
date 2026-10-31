@@ -26,6 +26,7 @@ From the repository root:
 
 ```bash
 npm install          # installs all workspaces once
+npm run lint         # ui5lint across all workspaces
 npm run typecheck    # TypeScript checks every example
 npm test             # headless QUnit suites (example 03 pilot; more on the way)
 npm run start:01     # or the example you changed

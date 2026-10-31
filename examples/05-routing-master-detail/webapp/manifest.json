@@ -57,8 +57,7 @@
 				"viewType": "XML",
 				"path": "learn.routing.view",
 				"controlId": "app",
-				"controlAggregation": "pages",
-				"async": true
+				"controlAggregation": "pages"
 			},
 			"routes": [
 				{

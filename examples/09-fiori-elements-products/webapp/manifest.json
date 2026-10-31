@@ -1,5 +1,5 @@
 {
-	"_version": "1.12.0",
+	"_version": "2.0.0",
 
 	"sap.app": {
 		"id": "learn.feproducts",
@@ -61,7 +61,6 @@
 				"dataSource": "mainService",
 				"preload": true,
 				"settings": {
-					"synchronizationMode": "None",
 					"operationMode": "Server",
 					"autoExpandSelect": true,
 					"earlyRequests": true
