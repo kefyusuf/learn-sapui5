@@ -1,0 +1,67 @@
+<mvc:View controllerName="learn.odatav4.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<Page id="page" title="{i18n>appTitle}">
+		<content>
+			<VBox class="sapUiSmallMargin">
+
+				<!-- V4 list binding: $-prefixed parameters, async-first model -->
+				<Table id="ordersTable"
+					   items="{path: '/SalesOrders', parameters: { $expand: 'Items' }}"
+					   mode="SingleSelectMaster"
+					   selectionChange="onOrderSelected"
+					   growing="true">
+					<headerToolbar>
+						<Toolbar>
+							<Title text="{i18n>orders.title}" level="H4" />
+						</Toolbar>
+					</headerToolbar>
+					<columns>
+						<Column width="7rem"><header><Text text="{i18n>column.id}" /></header></Column>
+						<Column><header><Text text="{i18n>column.customer}" /></header></Column>
+						<Column width="7rem" hAlign="End"><header><Text text="{i18n>column.total}" /></header></Column>
+						<Column width="7rem"><header><Text text="{i18n>column.status}" /></header></Column>
+					</columns>
+					<items>
+						<ColumnListItem vAlign="Middle" type="Active">
+							<cells>
+								<Text text="{ID}" />
+								<Text text="{Customer}" />
+								<Text text="{path: 'Total', formatter: '.formatTotal'}" />
+								<ObjectStatus text="{Status}" state="{path: 'Status', formatter: '.formatStatusState'}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+
+				<Panel headerText="{i18n>detail.items}" class="sapUiSmallMarginTop"
+					   visible="{= ${ui>/hasSelection} }">
+					<!-- Relative V4 binding: {Items} of whatever order the
+					     view is bound to (set by bindElement with $expand). -->
+					<Table id="itemsTable" items="{Items}">
+						<columns>
+							<Column><header><Text text="{i18n>column.product}" /></header></Column>
+							<Column width="5rem" hAlign="End"><header><Text text="{i18n>column.qty}" /></header></Column>
+							<Column width="6rem" hAlign="End"><header><Text text="{i18n>column.price}" /></header></Column>
+						</columns>
+						<items>
+							<ColumnListItem vAlign="Middle">
+								<cells>
+									<Text text="{Product}" />
+									<Text text="{Quantity}" />
+									<Text text="{path: 'Price', formatter: '.formatTotal'}" />
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</Panel>
+
+				<Text text="{i18n>detail.select}" visible="{= !${ui>/hasSelection} }" class="sapUiSmallMarginTop" />
+
+			</VBox>
+		</content>
+	</Page>
+
+</mvc:View>

@@ -1,0 +1,20 @@
+{
+  "name": "ui5-learn-10-odata-v4",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 10 - OData V4 freestyle: the sales orders app on the V4 model (RAP/CAP world)",
+  "scripts": {
+    "start": "ui5 serve --port 8091 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist",
+    "test": "node ../../scripts/test-headless.mjs 10",
+    "lint": "ui5lint -q"
+  },
+  "devDependencies": {
+    "@sap-ux/ui5-middleware-fe-mockserver": "2.4.16",
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}
