@@ -27,7 +27,9 @@
 						<Column width="6rem" hAlign="End"><header><Text text="{i18n>column.price}" /></header></Column>
 					</columns>
 					<items>
-						<ColumnListItem vAlign="Middle">
+						<!-- type="Active": the default (Inactive) rows swallow
+						     press events - itemPress never fires without this. -->
+						<ColumnListItem vAlign="Middle" type="Active">
 							<cells>
 								<Text text="{Product}" />
 								<Text text="{Quantity}" />
