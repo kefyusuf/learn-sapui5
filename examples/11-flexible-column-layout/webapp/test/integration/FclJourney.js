@@ -38,6 +38,9 @@ sap.ui.define([
 			return this.waitFor({
 				viewName: "Detail",
 				id: "objectHeader",
+				// generous: the FCL boot + the V4 round-trips can be slow
+				// when the machine is under load
+				timeout: 90,
 				success: function (oHeader) {
 					Opa5.assert.strictEqual(oHeader.getTitle(), sOrderId,
 						`detail column shows order ${sOrderId}`);
@@ -59,6 +62,52 @@ sap.ui.define([
 				},
 				errorMessage: `The items table never showed "${sProduct}"`
 			});
+		},
+
+		iPressTheEditStatusButton: function () {
+			return this.waitFor({
+				viewName: "Detail",
+				id: "editStatusButton",
+				actions: new Press(),
+				errorMessage: "Did not find the edit-status button"
+			});
+		},
+
+		iChooseStatus: function (sStatus) {
+			return this.waitFor({
+				viewName: "Detail",
+				id: "editStatusSelect",
+				success: function (oSelect) {
+					// setSelectedKey is the pragmatic OPA action for
+					// sap.m.Select (fires change, updates the model).
+					oSelect.setSelectedKey(sStatus);
+				},
+				errorMessage: "Did not find the status select (is the dialog open?)"
+			});
+		},
+
+		iSaveTheEdit: function () {
+			return this.waitFor({
+				viewName: "Detail",
+				id: "editSave",
+				actions: new Press(),
+				errorMessage: "Did not find the edit save button"
+			});
+		},
+
+		theDetailStatusIs: function (sStatus) {
+			return this.waitFor({
+				viewName: "Detail",
+				id: "objectHeader",
+				// poll: the PATCH round-trips before the status updates
+				check: function (oHeader) {
+					return oHeader.getAttributes()[1].getText() === sStatus;
+				},
+				success: function () {
+					Opa5.assert.ok(true, `detail shows status "${sStatus}"`);
+				},
+				errorMessage: `The detail never showed status "${sStatus}"`
+			});
 		}
 	});
 
@@ -78,6 +127,18 @@ sap.ui.define([
 
 		Then.theDetailShowsOrder("SO-2002")
 			.and.theItemsTableShows('27" 4K Monitor')
+			.and.iTeardown();
+	});
+
+	opaTest("updates the status of the selected order", function (Given, When, Then) {
+		Given.iStartTheApp()
+			.and.iSelectTheOrder("SO-2002")
+			.and.iPressTheEditStatusButton();
+
+		When.iChooseStatus("Open")
+			.and.iSaveTheEdit();
+
+		Then.theDetailStatusIs("Open")
 			.and.iTeardown();
 	});
 });
