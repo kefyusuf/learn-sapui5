@@ -2,6 +2,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import XMLView from "sap/ui/core/mvc/XMLView";
 import FlexibleColumnLayout from "sap/f/FlexibleColumnLayout";
 import Table from "sap/m/Table";
+import Button from "sap/m/Button";
 
 /**
  * @namespace learn.fcl.controller
@@ -14,6 +15,7 @@ import Table from "sap/m/Table";
 export default class AppController extends Controller {
 
 	private oDetailView: XMLView | null = null;
+	private oItemDetailView: XMLView | null = null;
 
 	public onInit(): void {
 		const oFCL = this.byId("fcl") as FlexibleColumnLayout;
@@ -45,6 +47,13 @@ export default class AppController extends Controller {
 									path: sPath,
 									parameters: { $expand: "Items" }
 								});
+
+								// The items table press drives the THIRD column.
+								// Attached once - the Detail view is created once.
+								(oDetailView.byId("itemsTable") as Table).attachItemPress(
+									(oItemEvent) => this.openItemDetail(oFCL, oItemEvent)
+								);
+
 								oFCL.setLayout("TwoColumnsMidExpanded");
 							}
 						);
@@ -58,5 +67,46 @@ export default class AppController extends Controller {
 				}
 			);
 		});
+	}
+
+	/**
+	 * The third column: the pressed item's detail in the end column.
+	 * Same lazy pattern as the Detail view. The close button is wired HERE
+	 * because the ItemDetail view is deliberately controller-less - one
+	 * navigation owner (this controller), like the rest of the flow.
+	 */
+	private openItemDetail(
+		oFCL: FlexibleColumnLayout,
+		oEvent: { getParameter(sName: string): unknown }
+	): void {
+		const oListItem = oEvent.getParameter("listItem") as
+			| { getBindingContext(): { getPath(): string } | undefined }
+			| undefined;
+		const sItemPath = oListItem?.getBindingContext()?.getPath() ?? "";
+		if (!sItemPath) {
+			return;
+		}
+
+		if (!this.oItemDetailView) {
+			void XMLView.create({ viewName: "learn.fcl.view.ItemDetail" }).then(
+				(oItemDetailView) => {
+					this.oItemDetailView = oItemDetailView;
+					oFCL.addEndColumnPage(oItemDetailView);
+					oItemDetailView.bindElement({ path: sItemPath });
+
+					(oItemDetailView.byId("closeItemButton") as Button).attachPress(
+						() => oFCL.setLayout("TwoColumnsMidExpanded")
+					);
+
+					oFCL.setLayout("ThreeColumnsMidExpanded");
+				},
+				// A silent rejection here shows up as "nothing happens" in the
+				// app - log it (the headless runner surfaces console.error).
+				(oError: unknown) => console.error("ItemDetail view failed to load", oError)
+			);
+			return;
+		}
+		this.oItemDetailView.bindElement({ path: sItemPath });
+		oFCL.setLayout("ThreeColumnsMidExpanded");
 	}
 }

@@ -95,6 +95,58 @@ sap.ui.define([
 			});
 		},
 
+		iPressTheFirstItem: function () {
+			return this.waitFor({
+				viewName: "Detail",
+				controlType: "sap.m.ColumnListItem",
+				// match by content, not by the (model-resolved) binding path.
+				// A matcher FUNCTION here - with controlType, check receives
+				// every candidate at once and getCells() blows up on it.
+				matchers: function (oRow) {
+					return oRow.getCells()[0].getText() === '27" 4K Monitor';
+				},
+				actions: new Press(),
+				errorMessage: "Did not find the monitor row in the items table"
+			});
+		},
+
+		theItemDetailShows: function (sProduct) {
+			return this.waitFor({
+				viewName: "ItemDetail",
+				id: "itemObjectHeader",
+				timeout: 90,
+				success: function (oHeader) {
+					Opa5.assert.strictEqual(oHeader.getTitle(), sProduct,
+						`third column shows item ${sProduct}`);
+				},
+				errorMessage: "Did not reach the item detail (third column)"
+			});
+		},
+
+		theLayoutIs: function (sLayout) {
+			return this.waitFor({
+				controlType: "sap.f.FlexibleColumnLayout",
+				// a MATCHER (per control) - with controlType, check receives
+				// every candidate at once and getLayout() blows up on it
+				matchers: function (oFCL) {
+					return oFCL.getLayout() === sLayout;
+				},
+				success: function () {
+					Opa5.assert.ok(true, `layout is ${sLayout}`);
+				},
+				errorMessage: `The layout never became ${sLayout}`
+			});
+		},
+
+		iCloseTheItemDetail: function () {
+			return this.waitFor({
+				viewName: "ItemDetail",
+				id: "closeItemButton",
+				actions: new Press(),
+				errorMessage: "Did not find the close button in the item detail"
+			});
+		},
+
 		theDetailStatusIs: function (sStatus) {
 			return this.waitFor({
 				viewName: "Detail",
@@ -139,6 +191,20 @@ sap.ui.define([
 			.and.iSaveTheEdit();
 
 		Then.theDetailStatusIs("Open")
+			.and.iTeardown();
+	});
+
+	opaTest("opens the item detail in the third column and closes it", function (Given, When, Then) {
+		Given.iStartTheApp()
+			.and.iSelectTheOrder("SO-2002")
+			.and.iPressTheFirstItem();
+
+		Then.theItemDetailShows('27" 4K Monitor')
+			.and.theLayoutIs("ThreeColumnsMidExpanded");
+
+		When.iCloseTheItemDetail();
+
+		Then.theLayoutIs("TwoColumnsMidExpanded")
 			.and.iTeardown();
 	});
 });

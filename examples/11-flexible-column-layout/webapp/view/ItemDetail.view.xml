@@ -1,0 +1,28 @@
+<mvc:View xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<!-- Deliberately controller-less: the App controller owns ALL navigation
+	     in this no-routing FCL pattern, so it attaches the close button's
+	     press handler programmatically after creating this view. (A press=
+	     attribute here would be a dead handler - M16's lesson.) -->
+	<Page id="itemDetailPage" title="{i18n>item.title}">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<ObjectHeader id="itemObjectHeader"
+							  title="{Product}"
+							  number="{Price}"
+							  numberUnit="EUR">
+					<attributes>
+						<ObjectAttribute title="{i18n>item.id}" text="{ItemID}" />
+						<ObjectAttribute title="{i18n>column.qty}" text="{Quantity}" />
+					</attributes>
+				</ObjectHeader>
+
+				<Toolbar class="sapUiSmallMarginTop">
+					<Button id="closeItemButton" text="{i18n>item.close}" />
+				</Toolbar>
+			</VBox>
+		</content>
+	</Page>
+
+</mvc:View>

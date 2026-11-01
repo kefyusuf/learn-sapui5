@@ -118,11 +118,20 @@ async function runPage(url, sMode, sMarker) {
 		const ws = new WebSocket(page.webSocketDebuggerUrl);
 		await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
 
+		// Console errors are often the ONLY trace of a silent failure
+		// (a rejected view-creation promise, a missing module...).
+		const consoleErrors = [];
 		let msgId = 0;
 		const pending = new Map();
 		ws.onmessage = (ev) => {
 			const m = JSON.parse(ev.data);
-			if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); }
+			if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); return; }
+			if (m.method === "Runtime.consoleAPICalled" && m.params?.type === "error") {
+				const sText = (m.params.args || [])
+					.map((a) => a.value ?? a.description ?? "")
+					.join(" ").replace(/\s+/g, " ").trim().slice(0, 400);
+				if (sText && consoleErrors.length < 10) consoleErrors.push(sText);
+			}
 		};
 		const send = (method, params = {}) => new Promise((res) => {
 			const id = ++msgId;
@@ -164,14 +173,20 @@ async function runPage(url, sMode, sMarker) {
 		}
 
 		let failures = [];
+		let details = [];
 		if (sMode === "qunit") {
 			failures = JSON.parse((await evalJs(
 				"JSON.stringify([...document.querySelectorAll('li.fail .test-name')].map(e => e.textContent.trim()))"
 			)) || "[]");
+			// The failed ASSERTIONS live one level deeper (li.fail li.fail) -
+			// their text is what actually says WHY the journey failed.
+			details = JSON.parse((await evalJs(
+				"JSON.stringify([...document.querySelectorAll('li.fail li.fail')].map(e => e.innerText.replace(/\\s+/g, ' ').trim().slice(0, 400)))"
+			)) || "[]");
 		}
 
 		ws.close();
-		return { mode: sMode, resultText: resultText.trim(), smokeHit, diagText, failures };
+		return { mode: sMode, resultText: resultText.trim(), smokeHit, diagText, failures, details, consoleErrors };
 	} finally {
 		if (isWin) {
 			try { execSync(`taskkill /pid ${chrome.pid} /T /F`, { stdio: "ignore" }); } catch { /* gone */ }
@@ -190,7 +205,9 @@ function parseResults(oPage) {
 		run: ran,
 		passed: ran && (!failedMatch || Number(failedMatch[1]) === 0),
 		summary: ran ? oPage.resultText.replace(/\s+/g, " ").trim() : "QUnit did not report a result",
-		failures: oPage.failures
+		failures: oPage.failures,
+		details: oPage.details,
+		consoleErrors: oPage.consoleErrors
 	};
 }
 
@@ -245,6 +262,8 @@ for (const t of targets) {
 				if (!r.run || !r.passed) anyFailed = true;
 				console.log(`  ${r.run && r.passed ? "PASS" : "FAIL"}: ${r.summary}`);
 				for (const f of r.failures) console.log(`    failing: ${f}`);
+				for (const d of r.details) console.log(`      > ${d}`);
+				for (const c of r.consoleErrors) console.log(`      console.error: ${c}`);
 			}
 		}
 	} finally {

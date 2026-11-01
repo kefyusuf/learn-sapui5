@@ -57,7 +57,7 @@ When an error message looks familiar, look it up there first.
 | [06-freestyle-vs-fiori-elements](docs/06-freestyle-vs-fiori-elements.md) | Choosing the app architecture |
 | [07-typescript-in-ui5](docs/07-typescript-in-ui5.md) | The TS setup and its traps |
 | [08-debugging](docs/08-debugging.md) | Console, network tab, Diagnostics window |
-| [09-common-mistakes](docs/09-common-mistakes.md) | **The catalog: M01-M14** |
+| [09-common-mistakes](docs/09-common-mistakes.md) | **The catalog: M01-M18** |
 | [10-glossary](docs/10-glossary.md) | SAP jargon decoded (RAP, CAP, CDS, FLP...) |
 | [11-learning-path](docs/11-learning-path.md) | Roadmap with time estimates |
 | [12-testing-tdd](docs/12-testing-tdd.md) | QUnit harness, TDD cycle, branch → commit → PR workflow |

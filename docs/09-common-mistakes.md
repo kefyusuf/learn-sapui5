@@ -353,6 +353,55 @@ this.oDialog = await Fragment.load({
 
 ---
 
+## M17 - `ColumnListItem` without `type`: rows look fine, `itemPress` never fires
+
+**Symptom:** the table renders perfectly, tapping a row does nothing in the app, and in an OPA5 journey the `Press` action completes silently - but the `itemPress` handler never runs. No error anywhere.
+
+**Cause:** `ColumnListItem`'s `type` defaults to `Inactive` - inactive items swallow press events. Selection-based navigation (`selectionChange`) keeps working because the list's selection mode handles the tap, which is why the master list works while the "same-looking" items table doesn't.
+
+**Wrong:**
+```xml
+<ColumnListItem vAlign="Middle">
+    <cells>...</cells>
+</ColumnListItem>
+```
+**Fixed:**
+```xml
+<ColumnListItem vAlign="Middle" type="Active">
+    <cells>...</cells>
+</ColumnListItem>
+```
+
+**Lesson:** any row you tap for navigation needs `type="Active"` (or `Navigation`, which also shows a chevron). This bit example 11's third-column flow and was found only because the OPA journey kept timing out on the item detail. Related: M16 (handlers wired but never called).
+
+---
+
+## M18 - OPA `waitFor` with `controlType` + `check`: the check gets ALL candidates
+
+**Symptom:** an OPA journey step searching by `controlType` throws `TypeError: oRow.getCells is not a function` (or `oFCL.getLayout is not a function`) inside its own `check` - even though the controls exist and the type is right.
+
+**Cause:** with a `controlType` search, OPA passes **every matching control at once** into `check` - not each control individually. `check` is meant for id-based waits where exactly one control arrives. The per-control filter API is a **matcher** (or a matcher function).
+
+**Wrong:**
+```ts
+this.waitFor({
+    controlType: "sap.m.ColumnListItem",
+    check: (oRow) => oRow.getCells()[0].getText() === "..." // boom
+});
+```
+**Fixed:**
+```ts
+this.waitFor({
+    controlType: "sap.m.ColumnListItem",
+    matchers: (oRow) => oRow.getCells()[0].getText() === "...", // per control
+    actions: new Press()
+});
+```
+
+**Rule of thumb:** `id` + `check` (one control) vs. `controlType` + `matchers` (filter per control). Both bugs in this round surfaced only through the journeys - the unit suite stayed green.
+
+---
+
 ## Quick reference: error → mistake
 
 | Error fragment | Mistake |
@@ -372,3 +421,5 @@ this.oDialog = await Fragment.load({
 | content under header, 44px page | M13 |
 | backend answers for `/index.html` | M14 |
 | **controls missing after an expression binding, no error** | **M15** |
+| **row tap does nothing - `itemPress` never fires, no error** | **M17** |
+| **`getCells/getLayout is not a function` inside an OPA `check`** | **M18** |
