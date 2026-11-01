@@ -15,8 +15,9 @@ Work through the examples **in order** - each one uses only what the previous on
 | 07 | [crud-leave-request](../examples/07-crud-leave-request/README.md) | Leave request self-service | create/remove, validation, confirm dialogs, refresh patterns | 3-4h |
 | 08 | [real-odata-northwind](../examples/08-real-odata-northwind/README.md) | Live product list | Real backend, CORS + proxy, error handling | 1-2h |
 | 09 | [fiori-elements-products](../examples/09-fiori-elements-products/README.md) | Product List Report, generator-style | FE templates, V4 annotations, Component targets | 2h |
+| 10 | [odata-v4](../examples/10-odata-v4/README.md) | Sales orders on V4 | OData V4 model, `$`-prefixed options, async-first, full CRUD journeys | 2-3h |
 
-Total: roughly 3-4 focused days to the end of the path.
+Total: roughly 4-5 focused days to the end of the path.
 
 ## After each example
 

@@ -62,6 +62,7 @@ When an error message looks familiar, look it up there first.
 | [11-learning-path](docs/11-learning-path.md) | Roadmap with time estimates |
 | [12-testing-tdd](docs/12-testing-tdd.md) | QUnit harness, TDD cycle, branch → commit → PR workflow |
 | [13-deployment](docs/13-deployment.md) | What `ui5 build` produces and where `dist/` can go (BTP/ABAP/static) |
+| [14-performance-a11y](docs/14-performance-a11y.md) | Performance patterns and accessibility essentials |
 
 ## Technical facts
 
