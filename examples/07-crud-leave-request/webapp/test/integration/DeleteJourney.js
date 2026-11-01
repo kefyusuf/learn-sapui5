@@ -41,7 +41,7 @@ sap.ui.define([
 		iPressTheDeleteButton: function () {
 			return this.waitFor({
 				viewName: "App",
-				id: "deleteButton",
+				id: "deleteRequestButton",
 				actions: new Press(),
 				errorMessage: "Did not find the delete button"
 			});

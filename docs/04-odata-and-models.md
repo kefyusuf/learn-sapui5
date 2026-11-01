@@ -4,7 +4,16 @@ OData is the protocol SAP backends speak. UI5 has first-class models for it. See
 
 ## OData in one paragraph
 
-An OData service exposes **entity sets** (`/Products`, `/SalesOrderSet`) of typed **entities**, described by a machine-readable **`$metadata`** document. Clients filter (`$filter`), page (`$top/$skip`), and read related entities in one round trip (`$expand`). V2 (most SAP Gateway services) and V4 (SAP RAP / Fiori Elements default) differ in details - UI5 has a model class for each.
+An OData service exposes **entity sets** (`/Products`, `/SalesOrderSet`) of typed **entities**, described by a machine-readable **`$metadata`** document. Clients filter (`$filter`), page (`$top/$skip`), and read related entities in one round trip (`$expand`). V2 (most SAP Gateway services) and V4 (SAP RAP / Fiori Elements default) differ in details - UI5 has a model class for each. **New projects start with V4**: example [10](../examples/10-odata-v4/README.md) is the V4 twin of examples 06/07.
+
+## V2 vs V4 - the write patterns
+
+| Topic | V2 (examples 06/07) | V4 (example 10) |
+|-------|---------------------|-----------------|
+| Create | `oModel.create(path, data, { success })` + manual `refresh` | `ODataListBinding.create` - transient row → batch, no refresh |
+| Update | `oModel.update(path, data, { success })` + manual `refresh` | `Context.setProperty` → PATCH, bindings update themselves |
+| Delete | `oModel.remove(path, { success })` + manual `refresh` | `Context.delete` — list updates itself |
+| Data access | sync `getProperty` possible (dangerous) | **async only** - react to events |
 
 ## Declaring the service in the manifest
 

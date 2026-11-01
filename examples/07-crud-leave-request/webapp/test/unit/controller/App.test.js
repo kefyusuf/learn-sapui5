@@ -110,4 +110,79 @@ sap.ui.define([
 		assert.strictEqual(this.oToast.callCount, 1, "toast shown");
 		assert.strictEqual(this.oRefreshSpy.callCount, 1, "list refreshed");
 	});
+
+	QUnit.module("controller.onEditRequest / onSaveEdit", {
+		beforeEach: function () {
+			// Reuse the delete module's fakes, plus the edit dialog controls.
+			this.sb = sinon.createSandbox();
+			this.oInformation = this.sb.stub(MessageBox, "information");
+			this.oConfirm = this.sb.stub(MessageBox, "confirm");
+			this.oToast = this.sb.stub(MessageToast, "show");
+			this.oController = new AppController();
+			this.oController.oBundle = { getText: (sKey, aArgs) => sKey + (aArgs ? "|" + aArgs.join(",") : "") };
+
+			this.sUpdatePath = null;
+			this.oUpdateData = null;
+			this.oModel = {
+				update: (sPath, oData, mParams) => {
+					this.sUpdatePath = sPath;
+					this.oUpdateData = oData;
+					mParams.success();
+				}
+			};
+
+			this.sSelectedId = "LR-0001";
+			this.oRefreshSpy = this.sb.spy();
+			const oFakeTable = {
+				getBinding: () => ({ refresh: this.oRefreshSpy }),
+				getSelectedItem: () => ({
+					getBindingContext: () => ({
+						getPath: () => `/LeaveRequestSet('${this.sSelectedId}')`,
+						getProperty: (sProp) => (sProp === "ID" ? this.sSelectedId
+							: sProp === "Type" ? "Annual" : `${sProp}:${this.sSelectedId}`)
+					})
+				})
+			};
+
+			sinon.stub(this.oController, "getView").returns({
+				getModel: (sName) => {
+					if (sName === "i18n") {
+						return { getResourceBundle: () => ({ getText: (sKey, aArgs) => sKey + (aArgs ? "|" + aArgs.join(",") : "") }) };
+					}
+					return this.oModel;
+				}
+			});
+			this.sb.stub(this.oController, "byId").callsFake((sId) => {
+				switch (sId) {
+					case "requestsTable": return oFakeTable;
+					case "editIdText": return { setText: this.sb.spy() };
+					case "editStatusSelect": return {
+						getSelectedKey: () => this.sSelectedType ?? "Annual",
+						setSelectedKey: this.sb.spy()
+					};
+					default: return null;
+				}
+			});
+
+			this.oDialog = { open: this.sb.spy(), close: this.sb.spy() };
+			this.oController.oDialog = this.oDialog;
+		},
+		afterEach: function () {
+			this.sb.restore();
+		}
+	});
+
+	QUnit.test("onEditRequest opens the dialog prefilled with the current type", async function (assert) {
+		await this.oController.onEditRequest();
+
+		assert.strictEqual(this.oDialog.open.callCount, 1, "dialog opened");
+	});
+
+	QUnit.test("onSaveEdit updates the leave type via model.update", async function (assert) {
+		await this.oController.onSaveEdit();
+
+		assert.strictEqual(this.sUpdatePath, "/LeaveRequestSet('LR-0001')", "update on the selected path");
+		assert.strictEqual(this.oUpdateData.Type, "Annual", "the selected type is sent");
+		assert.strictEqual(this.oToast.callCount, 1, "toast shown");
+	});
 });

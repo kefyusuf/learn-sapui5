@@ -4,6 +4,8 @@ import Dialog from "sap/m/Dialog";
 import Input from "sap/m/Input";
 import DatePicker from "sap/m/DatePicker";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import Select from "sap/m/Select";
+import Text from "sap/m/Text";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageToast from "sap/m/MessageToast";
 import MessageBox from "sap/m/MessageBox";
@@ -117,6 +119,63 @@ export default class AppController extends Controller {
 				}
 			}
 		);
+	}
+
+	public async onEditRequest(): Promise<void> {
+		const oTable = this.byId("requestsTable") as Table;
+		const oContext = oTable.getSelectedItem()?.getBindingContext();
+		if (!oContext) {
+			// Visible feedback instead of a silent return (docs/12).
+			MessageBox.information(this._text("error.selectRow"));
+			return;
+		}
+
+		await this._ensureEditDialog();
+		(this.byId("editIdText") as unknown as { setText(v: string): void }).setText(
+			String(oContext.getProperty("ID")));
+		(this.byId("editStatusSelect") as unknown as Select).setSelectedKey(
+			String(oContext.getProperty("Type")));
+		this.oDialog?.open();
+	}
+
+	private async _ensureEditDialog(): Promise<void> {
+		if (!this.oDialog) {
+			// controller: this connects the fragment's press handlers (docs/09, M16).
+			this.oDialog = (await Fragment.load({
+				name: "learn.crud.view.EditStatusDialog",
+				id: this.getView()?.getId(),
+				controller: this
+			})) as Dialog;
+			this.getView()?.addDependent(this.oDialog);
+		}
+	}
+
+	public onCancelEdit(): void {
+		this.oDialog?.close();
+	}
+
+	public onSaveEdit(): void {
+		const oTable = this.byId("requestsTable") as Table;
+		const oContext = oTable.getSelectedItem()?.getBindingContext();
+		const sNewType = String((this.byId("editStatusSelect") as unknown as Select).getSelectedKey());
+		if (!oContext || !sNewType) {
+			return;
+		}
+
+		// V2 update: model.update with success/error handlers - the refresh
+		// goes into success (docs/12).
+		const oModel = this.getView()?.getModel() as ODataModel;
+		oModel.update(oContext.getPath(), { Type: sNewType }, {
+			success: () => {
+				(oTable.getBinding("items") as ListBinding).refresh();
+				MessageToast.show(this._text("updated.message",
+					[String(oContext.getProperty("ID"))]));
+			},
+			error: (oError: { message?: string }) => {
+				MessageBox.error(oError.message ?? "Update failed");
+			}
+		});
+		this.oDialog?.close();
 	}
 
 	public onDeleteRequest(): void {
