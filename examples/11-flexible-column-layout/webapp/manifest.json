@@ -82,19 +82,22 @@
 				{
 					"pattern": "",
 					"name": "master",
-					"target": "master"
+					"target": "master",
+					"layout": "OneColumn"
 				},
 				{
 					"pattern": "detail/{orderId}",
 					"name": "detail",
-					"target": "detail"
+					"target": "detail",
+					"layout": "TwoColumnsMidExpanded"
 				}
 			],
 			"targets": {
 				"master": {
 					"type": "View",
 					"name": "Master",
-					"level": 1
+					"level": 1,
+					"controlAggregation": "beginColumnPages"
 				},
 				"detail": {
 					"type": "View",

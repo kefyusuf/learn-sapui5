@@ -5,21 +5,8 @@ import FlexibleColumnLayout from "sap/f/FlexibleColumnLayout";
 /**
  * @namespace learn.fcl.controller
  *
- * The root view's controller owns the FlexibleColumnLayout: each route
- * maps to a layout (OneColumn for the list, TwoColumnsMidExpanded when
- * a detail is open). The pattern is from SAP's freestyle FCL samples.
+ * The FCL layout switching is handled by the sap.f.routing.Router via the
+ * route-level "layout" properties in the manifest (OneColumn for master,
+ * TwoColumnsMidExpanded for detail) - no manual layout code needed here.
  */
-export default class AppController extends Controller {
-
-	public onInit(): void {
-		const oFCL = this.byId("fcl") as FlexibleColumnLayout;
-		const oRouter = UIComponent.getRouterFor(this);
-
-		oRouter.getRoute("master")?.attachMatched(() => {
-			oFCL.setLayout("OneColumn");
-		});
-		oRouter.getRoute("detail")?.attachMatched(() => {
-			oFCL.setLayout("TwoColumnsMidExpanded");
-		});
-	}
-}
+export default class AppController extends Controller {}
