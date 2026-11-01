@@ -1,0 +1,8 @@
+/* The height chain: html -> body -> ComponentContainer -> XML view -> FCL. */
+html, body {
+	height: 100%;
+}
+
+.sapUiComponentContainer .sapUiView {
+	height: 100%;
+}
