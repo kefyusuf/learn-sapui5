@@ -15,6 +15,10 @@
 					</attributes>
 				</ObjectHeader>
 
+				<Toolbar class="sapUiSmallMarginTop">
+					<Button id="editStatusButton" text="{i18n>edit.statusButton}" press="onEditStatus" />
+				</Toolbar>
+
 				<Title text="{i18n>detail.items}" level="H3" class="sapUiSmallMarginTop" />
 				<Table id="itemsTable" items="{Items}">
 					<columns>

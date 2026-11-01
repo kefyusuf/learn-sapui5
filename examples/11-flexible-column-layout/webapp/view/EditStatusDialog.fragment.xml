@@ -1,0 +1,25 @@
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core">
+	<Dialog id="editStatusDialog"
+			title="{i18n>edit.title}"
+			contentWidth="20rem">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<Label text="{i18n>edit.order}" labelFor="editOrderText" />
+				<Text id="editOrderText" text="{/edit/order}" />
+				<Label text="{i18n>edit.status}" labelFor="editStatusSelect" />
+				<Select id="editStatusSelect" selectedKey="{/edit/status}">
+					<items>
+						<core:Item key="Open" text="Open" />
+						<core:Item key="Processing" text="Processing" />
+						<core:Item key="Shipped" text="Shipped" />
+					</items>
+				</Select>
+			</VBox>
+		</content>
+		<buttons>
+			<Button text="{i18n>edit.cancel}" press="onCancelEdit" />
+			<Button id="editSave" text="{i18n>edit.save}" type="Emphasized" press="onSaveEdit" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>
