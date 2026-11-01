@@ -1,0 +1,11 @@
+<mvc:View controllerName="learn.fcl.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.f"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<!-- FlexibleColumnLayout: the router places the Master view into
+	     beginColumnPages and the Detail view into midColumnPages (see the
+	     manifest targets). The App controller switches the layout per route. -->
+	<FlexibleColumnLayout id="fcl" layout="OneColumn" />
+
+</mvc:View>

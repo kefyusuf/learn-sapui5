@@ -116,6 +116,16 @@ Two findings, documented for the next attempt at automating it:
 - In **real-time headless** runs the CDM boot stalls silently (empty body, no console errors) - virtual time fast-forwards whatever event chain real browsers complete; the CDM boot-task order needs investigation.
 - The runner has a generic **smoke mode** (`smoke: { page, marker }` - polls the rendered body text) ready for the sandbox once the headless stall is resolved. It is deliberately **not** wired into CI for the sandbox yet.
 
+## FCL (example 11): the routing-based variant stalls — the no-routing pattern works
+
+Example 11 (FlexibleColumnLayout) went through three variants; the finding is documented so the pattern choice is informed:
+
+- **Routing-based** (`sap.f.routing.Router` + the FCL): the Master view never populated in headless runs — the target placement stalled silently (beginPages 0, no console errors), across manifest v1/v2 shapes and route-level layouts.
+- **The working variant: FCL WITHOUT routing** — the App controller places the Master view (`XMLView.create` + `addBeginColumnPage`), attaches to the table's `selectionChange` and drives the Detail view + the layout switches manually. **Green in headless real-time** (the OPA journey passes).
+- The trade-off: no deep-linking via the hash (the FCL state is controller-managed) — acceptable for this teaching example; the routing-based FCL remains the pattern for FE apps (where the framework handles it).
+
+The runner's smoke mode + the 11 target were added during this investigation.
+
 ## CI
 
 `.github/workflows/ci.yml` runs `npm run typecheck` + `npm test` on every PR and every push to `main` (ubuntu-latest, Node 24, the preinstalled Chrome via `CHROME_BIN`). A PR is only mergeable when both are green - the same two commands you run locally.

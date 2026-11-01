@@ -1,0 +1,20 @@
+{
+  "name": "ui5-learn-11-flexible-column-layout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 11 - FlexibleColumnLayout: the modern freestyle master-detail pattern on OData V4",
+  "scripts": {
+    "start": "ui5 serve --port 8093 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist",
+    "test": "node ../../scripts/test-headless.mjs 11",
+    "lint": "ui5lint -q"
+  },
+  "devDependencies": {
+    "@sap-ux/ui5-middleware-fe-mockserver": "2.4.16",
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}
