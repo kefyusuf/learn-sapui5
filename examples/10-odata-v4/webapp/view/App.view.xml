@@ -17,6 +17,7 @@
 						<Toolbar>
 							<Title text="{i18n>orders.title}" level="H4" />
 							<ToolbarSpacer />
+							<Button id="deleteOrderButton" text="{i18n>delete}" press="onDeleteOrder" type="Transparent" />
 							<Button id="addOrderButton" text="{i18n>add}" press="onAddOrder" />
 						</Toolbar>
 					</headerToolbar>

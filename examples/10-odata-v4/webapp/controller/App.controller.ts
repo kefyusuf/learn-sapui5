@@ -4,9 +4,9 @@ import Dialog from "sap/m/Dialog";
 import Input from "sap/m/Input";
 import ODataListBinding from "sap/ui/model/odata/v4/ODataListBinding";
 import ODataModel from "sap/ui/model/odata/v4/ODataModel";
-import Table from "sap/m/Table";
 import MessageBox from "sap/m/MessageBox";
 import MessageToast from "sap/m/MessageToast";
+import Table from "sap/m/Table";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { formatter } from "learn/odatav4/model/formatter";
@@ -45,6 +45,35 @@ export default class AppController extends Controller {
 			parameters: { $expand: "Items" }
 		});
 		(this.getView()?.getModel("ui") as JSONModel).setProperty("/hasSelection", Boolean(sPath));
+	}
+
+	public onDeleteOrder(): void {
+		const oTable = this.byId("ordersTable") as Table;
+		const oContext = oTable.getSelectedItem()?.getBindingContext();
+		if (!oContext) {
+			// Visible feedback instead of a silent return (docs/12).
+			MessageBox.information(this._text("error.selectRow"));
+			return;
+		}
+
+		const sId = String(oContext.getProperty("ID"));
+		const sCustomer = String(oContext.getProperty("Customer"));
+
+		MessageBox.confirm(this._text("delete.confirm.text", [sId, sCustomer]), {
+			title: this._text("delete.confirm.title"),
+			onClose: (sAction: string | null) => {
+				if (sAction !== MessageBox.Action.OK) {
+					return;
+				}
+				// V4 delete: the CONTEXT knows its entity - one call, and the
+				// list updates itself (no manual refresh, unlike V2). The
+				// cast covers the typings gap for Context.delete in 1.152.
+				void (oContext as unknown as { delete(sGroupId: string): Promise<void> })
+					.delete("$auto").then(() => {
+					MessageToast.show(this._text("deleted.message", [sId]));
+				});
+			}
+		});
 	}
 
 	public async onAddOrder(): Promise<void> {

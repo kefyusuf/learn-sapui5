@@ -4,7 +4,7 @@
   "private": true,
   "description": "Example 10 - OData V4 freestyle: the sales orders app on the V4 model (RAP/CAP world)",
   "scripts": {
-    "start": "ui5 serve --port 8091 -o index.html",
+    "start": "ui5 serve --port 8092 -o index.html",
     "ts-typecheck": "tsc --noEmit",
     "build": "ui5 build --clean-dest --dest dist",
     "test": "node ../../scripts/test-headless.mjs 10",
