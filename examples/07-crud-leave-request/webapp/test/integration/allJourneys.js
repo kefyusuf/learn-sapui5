@@ -8,6 +8,7 @@ sap.ui.require(["learn/crud/util/mockserver"], function (mockserver) {
 	mockserver.startMockServer().then(function () {
 		sap.ui.require([
 			"learn/crud/test/integration/CreateRequestJourney",
+			"learn/crud/test/integration/EditJourney",
 			"learn/crud/test/integration/DeleteJourney"
 		], function () {
 			QUnit.start();
