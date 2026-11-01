@@ -122,6 +122,56 @@ sap.ui.define([
 			});
 		},
 
+		/* update flow */
+
+		iPressTheEditButton: function () {
+			return this.waitFor({
+				viewName: "App",
+				id: "editOrderButton",
+				actions: new Press(),
+				errorMessage: "Did not find the edit-status button"
+			});
+		},
+
+		iChooseStatus: function (sStatus) {
+			return this.waitFor({
+				viewName: "App",
+				id: "statusSelect",
+				success: function (oSelect) {
+					// setSelectedKey updates the property the dialog reads
+					// back on save - the pragmatic OPA way for sap.m.Select.
+					oSelect.setSelectedKey(sStatus);
+				},
+				errorMessage: "Did not find the status select (is the dialog open?)"
+			});
+		},
+
+		iSaveTheEdit: function () {
+			return this.waitFor({
+				viewName: "App",
+				id: "editSave",
+				actions: new Press(),
+				errorMessage: "Did not find the edit save button"
+			});
+		},
+
+		theRowStatusIs: function (sOrderId, sStatus) {
+			return this.waitFor({
+				viewName: "App",
+				id: "ordersTable",
+				// poll: the PATCH round-trips before the row's status updates
+				check: function (oTable) {
+					return oTable.getItems().some((oItem) =>
+						oItem.getCells()[0].getText() === sOrderId &&
+						oItem.getCells()[3].getText() === sStatus);
+				},
+				success: function () {
+					Opa5.assert.ok(true, `order "${sOrderId}" shows status "${sStatus}"`);
+				},
+				errorMessage: `Order "${sOrderId}" never showed status "${sStatus}"`
+			});
+		},
+
 		theConfirmDialogAppears: function () {
 			return this.waitFor({
 				searchOpenDialogs: true,
@@ -208,6 +258,18 @@ sap.ui.define([
 		When.iConfirmTheDeletion();
 
 		Then.theOrderDisappears("SO-2004")
+			.and.iTeardown();
+	});
+
+	opaTest("updates the status of the selected order", function (Given, When, Then) {
+		Given.iStartTheApp()
+			.and.iSelectTheOrder("SO-2002")
+			.and.iPressTheEditButton();
+
+		When.iChooseStatus("Shipped")
+			.and.iSaveTheEdit();
+
+		Then.theRowStatusIs("SO-2002", "Shipped")
 			.and.iTeardown();
 	});
 });

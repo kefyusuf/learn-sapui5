@@ -2,11 +2,12 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import Input from "sap/m/Input";
+import Select from "sap/m/Select";
+import Table from "sap/m/Table";
 import ODataListBinding from "sap/ui/model/odata/v4/ODataListBinding";
 import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import MessageBox from "sap/m/MessageBox";
 import MessageToast from "sap/m/MessageToast";
-import Table from "sap/m/Table";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { formatter } from "learn/odatav4/model/formatter";
@@ -17,6 +18,7 @@ import { formatter } from "learn/odatav4/model/formatter";
 export default class AppController extends Controller {
 
 	private oDialog: Dialog | null = null;
+	private oEditDialog: Dialog | null = null;
 
 	// Formatter adapters for the XML view (leading "." resolves here).
 	public formatTotal(nTotal: string | number): string {
@@ -45,6 +47,51 @@ export default class AppController extends Controller {
 			parameters: { $expand: "Items" }
 		});
 		(this.getView()?.getModel("ui") as JSONModel).setProperty("/hasSelection", Boolean(sPath));
+	}
+
+	public async onEditOrder(): Promise<void> {
+		const oContext = (this.byId("ordersTable") as Table).getSelectedItem()?.getBindingContext();
+		if (!oContext) {
+			MessageBox.information(this._text("error.selectRow"));
+			return;
+		}
+
+		// controller: this connects the fragment's press handlers (docs/09, M16).
+		if (!this.oEditDialog) {
+			this.oEditDialog = (await Fragment.load({
+				name: "learn.odatav4.view.EditStatusDialog",
+				id: this.getView()?.getId(),
+				controller: this
+			})) as Dialog;
+			this.getView()?.addDependent(this.oEditDialog);
+		}
+
+		// Prefill from the selected order's context.
+		const oUi = this.getView()?.getModel("ui") as JSONModel;
+		oUi.setProperty("/edit/id", String(oContext.getProperty("ID")));
+		oUi.setProperty("/edit/status", String(oContext.getProperty("Status")));
+		this.oEditDialog.open();
+	}
+
+	public onCancelEdit(): void {
+		this.oEditDialog?.close();
+	}
+
+	public onSaveEdit(): void {
+		const oContext = (this.byId("ordersTable") as Table).getSelectedItem()?.getBindingContext();
+		const sNewStatus = String((this.byId("statusSelect") as Select).getSelectedKey());
+		if (!oContext || !sNewStatus) {
+			return;
+		}
+
+		// V4 update: setProperty on the CONTEXT sends the PATCH - the row's
+		// bindings update themselves (no refresh, no model.update). The cast
+		// covers the typings gap for Context.setProperty in 1.152.
+		(oContext as unknown as { setProperty(sPath: string, oValue: unknown): void })
+			.setProperty("Status", sNewStatus);
+		MessageToast.show(this._text("edit.done.message",
+			[String(oContext.getProperty("ID")), sNewStatus]));
+		this.oEditDialog?.close();
 	}
 
 	public onDeleteOrder(): void {
