@@ -45,7 +45,8 @@ const TARGETS = [
 	{ prefix: "07", dir: "07-crud-leave-request", port: 8087 },
 	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 },
 	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
-	{ prefix: "10", dir: "10-odata-v4", port: 8092 }
+	{ prefix: "10", dir: "10-odata-v4", port: 8092 },
+	{ prefix: "11", dir: "11-flexible-column-layout", port: 8093 }
 ];
 
 const filter = process.argv[2];
@@ -203,18 +204,19 @@ function stopServer(child) {
 
 let anyFailed = false;
 
-for (const t of targets) {
-	const cwd = join(ROOT, "examples", t.dir);
+	for (const t of targets) {
+		const cwd = join(ROOT, "examples", t.dir);
 
-	// Collect the pages to exercise for this target.
-	const entries = TESTPAGES.filter((p) => existsSync(join(cwd, "webapp", p)))
-		.map((p) => ({ page: p, mode: "qunit" }));
-	if (t.smoke && existsSync(join(cwd, "webapp", t.smoke.page))) {
-		entries.push({ page: t.smoke.page, mode: "smoke", marker: t.smoke.marker });
-	}
-	if (entries.length === 0) {
-		continue;
-	}
+		// Collect the pages to exercise for this target.
+		const entries = TESTPAGES.filter((p) => existsSync(join(cwd, "webapp", p)))
+			.map((p) => ({ page: p, mode: "qunit" }));
+		if (t.smoke && existsSync(join(cwd, "webapp", t.smoke.page))) {
+			entries.push({ page: t.smoke.page, mode: "smoke", marker: t.smoke.marker });
+		}
+		if (entries.length === 0) {
+			console.log(`- ${t.prefix} ${t.dir}: no test pages, skipped`);
+			continue;
+		}
 
 	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
 	const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
