@@ -9,6 +9,7 @@
 - The Detail view: created lazily on the first selection, `bindElement` per selection
 - The **third column**: tapping an item row opens the item detail in the end column (`ThreeColumnsMidExpanded`), Close returns to two columns
 - The V4 update flow: the edit-status dialog sends the PATCH via `Context.setProperty`
+- The V4 **delete flow**: confirm dialog → `Context.delete()` → why `$expand`-ed collections need a manual re-read ([M20](../../docs/09-common-mistakes.md))
 - The V4 list + `$expand` on OData V4 (the same data as example 10)
 
 ## Run it
@@ -31,19 +32,21 @@ One navigation owner: the App controller drives ALL columns — including the th
 2. Selecting an order creates the Detail view lazily, adds it to the mid column (`TwoColumnsMidExpanded`) and binds it with `$expand: "Items"`.
 3. The items table fills from the expanded navigation — one round trip.
 4. Tapping an item row creates the ItemDetail view lazily, adds it to the end column (`ThreeColumnsMidExpanded`) and binds it to the item's context.
-5. Close returns to `TwoColumnsMidExpanded` — the column keeps its state for the next item.
+5. Close returns to `TwoColumnsMidExpanded`; Delete confirms via `MessageBox` and sends the DELETE — then the Detail is **unbound and re-bound** because `$expand`-ed collections are not auto-updated ([M20](../../docs/09-common-mistakes.md)).
 
 ## Common mistakes here
 
 - **M07** applies: the relative `{Items}` table needs the `$expand` in the `bindElement`.
 - **M17** was born here: `ColumnListItem` defaults to `type="Inactive"` — inactive rows swallow presses, so `itemPress` never fires without `type="Active"`.
+- **M19**: the dialog's display texts bind `{ui>/edit/order}` — a named local JSON model. `{/...}` would hit the OData V4 default model and throw `Failed to read path`.
+- **M20**: after `Context.delete()` the `$expand`-ed table does not update itself, `refresh()` is unsupported, and the delete promise may never settle — hence unbind + re-bind.
 - The layout switches: `setLayout("ThreeColumnsMidExpanded")` — the FCL's aggregations are managed by the framework; don't add views to the wrong column.
 
 ## Try this
 
 - Add a back-to-list button in the Detail view's header (the FCL's `beginColumnNavigate` event).
-- Delete an item from the third column with the V4 model's `remove` on the list binding — then verify the items table shrinks by itself.
+- After a DELETE, run the delete again on the same item ID and watch the error handling path (the `.catch` shows a MessageBox).
 
 ## Tests
 
-Three OPA5 journeys (headless-verified): select → detail, edit status (PATCH), and item → third column → close.
+Four OPA5 journeys (headless-verified): select → detail, edit status (PATCH), item → third column → close, and delete (confirm → table shrinks → back to two columns).

@@ -130,7 +130,11 @@ async function runPage(url, sMode, sMarker) {
 				const sText = (m.params.args || [])
 					.map((a) => a.value ?? a.description ?? "")
 					.join(" ").replace(/\s+/g, " ").trim().slice(0, 400);
-				if (sText && consoleErrors.length < 10) consoleErrors.push(sText);
+				// the i18n fallback-locale warning repeats on every boot and
+				// drowns the errors that actually matter
+				if (sText && !/fallback locale/.test(sText) && consoleErrors.length < 15) {
+					consoleErrors.push(sText);
+				}
 			}
 		};
 		const send = (method, params = {}) => new Promise((res) => {
@@ -235,6 +239,17 @@ for (const t of targets) {
 	}
 
 	const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+
+	// M21 guard: a zombie ui5 serve from a crashed earlier run answers on
+	// the port with STALE in-memory state (e.g. entities a previous run
+	// deleted) - every test against it is garbage. Refuse instead.
+	if (await get(`http://localhost:${t.port}/`)) {
+		console.log(`- ${t.prefix} ${t.dir}: SKIPPED, port ${t.port} already answers - ` +
+			"a zombie server holds it; kill it and re-run (see M21)");
+		anyFailed = true;
+		continue;
+	}
+
 	const server = spawn(npx, ["ui5", "serve", "--port", String(t.port)], {
 		cwd, stdio: "ignore", shell: process.platform === "win32",
 		// On Linux the child becomes a group leader so stopServer can kill

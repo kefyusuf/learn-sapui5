@@ -5,10 +5,15 @@
 			contentWidth="20rem">
 		<content>
 			<VBox class="sapUiSmallMargin">
+				<!-- {ui>...}: the dialog's LOCAL JSON model set by the
+				     controller. The default model here is OData V4 - binding
+				     {/edit/...} against it throws "Failed to read path" (M19).
+				     The Select stays UNBOUND: its value is read at save time
+				     (getSelectedKey) - one source of truth per control. -->
 				<Label text="{i18n>edit.order}" labelFor="editOrderText" />
-				<Text id="editOrderText" text="{/edit/order}" />
+				<Text id="editOrderText" text="{ui>/edit/order}" />
 				<Label text="{i18n>edit.status}" labelFor="editStatusSelect" />
-				<Select id="editStatusSelect" selectedKey="{/edit/status}">
+				<Select id="editStatusSelect">
 					<items>
 						<core:Item key="Open" text="Open" />
 						<core:Item key="Processing" text="Processing" />

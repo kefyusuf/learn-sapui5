@@ -2,6 +2,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import Select from "sap/m/Select";
+import JSONModel from "sap/ui/model/json/JSONModel";
 import MessageBox from "sap/m/MessageBox";
 import { formatter } from "learn/fcl/model/formatter";
 
@@ -28,12 +29,18 @@ export default class DetailController extends Controller {
 			this.getView()?.addDependent(this.oEditDialog);
 		}
 
-		// Prefill from the Detail view's binding context.
+		// Prefill from the Detail view's binding context. The dialog gets a
+		// LOCAL JSON model ("ui") for its display texts: binding {/edit/...}
+		// against the DEFAULT model would hit OData V4 and throw "Failed to
+		// read path /edit/..." - the service has no /edit entity set (M19).
 		const oContext = this.getView()?.getBindingContext();
 		if (!oContext) {
 			MessageBox.information("No order selected");
 			return;
 		}
+		this.oEditDialog.setModel(new JSONModel({
+			edit: { order: String(oContext.getProperty("ID")) }
+		}), "ui");
 		(this.byId("editStatusSelect") as unknown as Select).setSelectedKey(
 			String(oContext.getProperty("Status")));
 		this.oEditDialog.open();
@@ -45,7 +52,10 @@ export default class DetailController extends Controller {
 
 	public onSaveEdit(): void {
 		const oContext = this.getView()?.getBindingContext();
-		const sNewStatus = String((this.byId("editStatusSelect") as unknown as Select).getSelectedKey());
+		// read the chosen status straight from the Select - the one source
+		// of truth for the pending edit
+		const sNewStatus = String(
+			(this.byId("editStatusSelect") as unknown as Select).getSelectedKey());
 		if (!oContext || !sNewStatus) {
 			return;
 		}

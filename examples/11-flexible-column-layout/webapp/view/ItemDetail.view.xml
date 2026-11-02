@@ -20,6 +20,7 @@
 
 				<Toolbar class="sapUiSmallMarginTop">
 					<Button id="closeItemButton" text="{i18n>item.close}" />
+					<Button id="deleteItemButton" text="{i18n>item.delete}" type="Reject" />
 				</Toolbar>
 			</VBox>
 		</content>

@@ -402,6 +402,63 @@ this.waitFor({
 
 ---
 
+## M19 - Fragment bindings against the OData V4 default model: `Failed to read path`
+
+**Symptom:** console errors like `Failed to read path /edit/order - TypeError: Cannot read properties of undefined (reading '$kind')` on every dialog open. The bound control renders empty (and an OData type may throw a `FormatException` trying to format the missing value).
+
+**Cause:** a dialog fragment binds UI state with `{/edit/order}` - an **absolute path into the DEFAULT model**. In a V4 app the default model is the OData service, so the model tries to read `/edit/order` as an entity set that does not exist.
+
+**Fixed:** dialog-local state goes on a NAMED JSON model set by the controller:
+```ts
+this.oDialog.setModel(new JSONModel({ edit: { order: sOrderId } }), "ui");
+```
+```xml
+<Text text="{ui>/edit/order}" />
+```
+
+**Lesson:** `{/...}` means "the default model" - in V4 apps that is the service. Anything that is not service data (dialog state, UI flags) needs a named model. Found in example 11's edit dialog; the OPA journeys kept passing (they read the control directly) while the console filled with errors - another reason the headless runner now prints console errors. Related: M18.
+
+---
+
+## M20 - V4 DELETE on an `$expand`-ed collection: no auto-update, no `refresh()`, a promise that never settles
+
+**Symptom:** `Context.delete()` resolves the HTTP side fine (the batch shows `204 No Content`) but the table keeps the deleted row forever. Calling `.refresh()` on the list binding throws `Uncaught Error: Refresh on this binding is not supported`.
+
+**Cause:** three stacked V4 facts, each found one at a time:
+1. The OData V4 model does **not** auto-update data of an `$expand`-ed navigation property after a write.
+2. V4 bindings do **not** support `refresh()` (the V2-era way to force a re-read is gone).
+3. `Context.delete()`'s promise **may never settle** when the parent's expanded cache cannot be reconciled - so `await`-ing it for the UI update silently skips the update code.
+
+**Fixed:** drop the element binding (which releases the model cache) and re-bind - the fresh GET sees the post-delete data:
+```ts
+oContext.delete(); // fire - do not await it for the UI update
+const sOrderPath = oDetailView.getBindingContext()?.getPath();
+oDetailView.unbindElement();
+oDetailView.bindElement({ path: sOrderPath, parameters: { $expand: "Items" } });
+```
+
+**Lesson:** in V4, "the UI updates itself" is true for PATCH on the bound entity (`Context.setProperty`), NOT for writes into `$expand`-ed collections. Found in example 11's delete flow; the OPA journey caught it (the row stayed) while the DELETE itself looked successful.
+
+---
+
+## M21 - The zombie `ui5 serve`: every test run silently tests a stale server
+
+**Symptom:** tests pass/fail in ways that do not match the code at all - e.g. a journey suddenly cannot find an entity that exists in the mock data. Restarting changes nothing. `netstat` shows the port `LISTENING` even though no server should be running.
+
+**Cause:** an earlier run's `ui5 serve` survived teardown (a failed `taskkill` tree on Windows) and still holds the port. The headless runner's `waitForServer` saw the port answering and happily ran the tests against the **zombie** - whose in-memory state was from BEFORE: mock data it had already mutated (a DELETE from a previous run persisted in its RAM, not on disk).
+
+**Fixed:** the runner now refuses to run when the port already answers before spawning:
+```js
+if (await get(`http://localhost:${t.port}/`)) {
+    console.log(`port ${t.port} already answers - kill the zombie server first`);
+    process.exitCode = 2;
+}
+```
+
+**Lesson:** "is anything listening on this port?" is not the same as "is MY server listening?". Diagnosed by serving the same workspace on a different port and diffing the responses - the fresh server returned the deleted entity, the zombie did not. Also found in example 11's delete round.
+
+---
+
 ## Quick reference: error → mistake
 
 | Error fragment | Mistake |
@@ -423,3 +480,6 @@ this.waitFor({
 | **controls missing after an expression binding, no error** | **M15** |
 | **row tap does nothing - `itemPress` never fires, no error** | **M17** |
 | **`getCells/getLayout is not a function` inside an OPA `check`** | **M18** |
+| **`Failed to read path /...` on every dialog open** | **M19** |
+| **row stays after DELETE; `Refresh on this binding is not supported`** | **M20** |
+| **tests pass/fail against data that is not in the mock files** | **M21** |

@@ -147,6 +147,44 @@ sap.ui.define([
 			});
 		},
 
+		iPressTheDeleteButton: function () {
+			return this.waitFor({
+				viewName: "ItemDetail",
+				id: "deleteItemButton",
+				actions: new Press(),
+				errorMessage: "Did not find the delete button in the item detail"
+			});
+		},
+
+		iConfirmTheDelete: function () {
+			return this.waitFor({
+				controlType: "sap.m.Button",
+				// the MessageBox's OK button lives in the static UI area -
+				// no viewName, filter per control by its text
+				matchers: function (oButton) {
+					return oButton.getText() === "OK";
+				},
+				actions: new Press(),
+				errorMessage: "The delete confirmation (OK button) never appeared"
+			});
+		},
+
+		theItemIsGone: function (sProduct) {
+			return this.waitFor({
+				viewName: "Detail",
+				id: "itemsTable",
+				// poll until the V4 list binding reflects the DELETE
+				check: function (oTable) {
+					return !oTable.getItems().some((oItem) =>
+						oItem.getCells()[0].getText() === sProduct);
+				},
+				success: function () {
+					Opa5.assert.ok(true, `item "${sProduct}" removed from the table`);
+				},
+				errorMessage: `The item "${sProduct}" is still in the items table`
+			});
+		},
+
 		theDetailStatusIs: function (sStatus) {
 			return this.waitFor({
 				viewName: "Detail",
@@ -205,6 +243,19 @@ sap.ui.define([
 		When.iCloseTheItemDetail();
 
 		Then.theLayoutIs("TwoColumnsMidExpanded")
+			.and.iTeardown();
+	});
+
+	opaTest("deletes the item from the third column", function (Given, When, Then) {
+		Given.iStartTheApp()
+			.and.iSelectTheOrder("SO-2002")
+			.and.iPressTheFirstItem();
+
+		When.iPressTheDeleteButton()
+			.and.iConfirmTheDelete();
+
+		Then.theItemIsGone('27" 4K Monitor')
+			.and.theLayoutIs("TwoColumnsMidExpanded")
 			.and.iTeardown();
 	});
 });
