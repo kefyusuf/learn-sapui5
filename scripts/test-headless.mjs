@@ -46,7 +46,8 @@ const TARGETS = [
 	{ prefix: "08", dir: "08-real-odata-northwind", port: 8088 },
 	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
 	{ prefix: "10", dir: "10-odata-v4", port: 8092 },
-	{ prefix: "11", dir: "11-flexible-column-layout", port: 8093 }
+	{ prefix: "11", dir: "11-flexible-column-layout", port: 8093 },
+	{ prefix: "12", dir: "12-message-manager", port: 8094 }
 ];
 
 const filter = process.argv[2];
@@ -185,7 +186,7 @@ async function runPage(url, sMode, sMarker) {
 			// The failed ASSERTIONS live one level deeper (li.fail li.fail) -
 			// their text is what actually says WHY the journey failed.
 			details = JSON.parse((await evalJs(
-				"JSON.stringify([...document.querySelectorAll('li.fail li.fail')].map(e => e.innerText.replace(/\\s+/g, ' ').trim().slice(0, 400)))"
+				"JSON.stringify([...document.querySelectorAll('li.fail li.fail')].map(e => e.innerText.replace(/\\s+/g, ' ').trim().slice(0, 700)))"
 			)) || "[]");
 		}
 

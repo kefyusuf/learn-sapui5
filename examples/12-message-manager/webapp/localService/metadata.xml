@@ -1,0 +1,37 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+	<edmx:DataServices>
+		<Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="ZSALESORDERSV4">
+
+			<EntityType Name="SalesOrder">
+				<Key>
+					<PropertyRef Name="ID"/>
+				</Key>
+				<Property Name="ID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Customer" Type="Edm.String" MaxLength="80"/>
+				<Property Name="OrderDate" Type="Edm.Date"/>
+				<Property Name="Status" Type="Edm.String" MaxLength="20"/>
+				<Property Name="Total" Type="Edm.Decimal" Precision="13" Scale="2"/>
+				<NavigationProperty Name="Items" Type="Collection(ZSALESORDERSV4.SalesOrderItem)"/>
+			</EntityType>
+
+			<EntityType Name="SalesOrderItem">
+				<Key>
+					<PropertyRef Name="ItemID"/>
+				</Key>
+				<Property Name="ItemID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="OrderID" Type="Edm.String" MaxLength="10"/>
+				<Property Name="Product" Type="Edm.String" MaxLength="40"/>
+				<Property Name="Quantity" Type="Edm.Int32"/>
+				<Property Name="Price" Type="Edm.Decimal" Precision="13" Scale="2"/>
+			</EntityType>
+
+			<EntityContainer Name="Container">
+				<EntitySet Name="SalesOrders" EntityType="ZSALESORDERSV4.SalesOrder">
+					<NavigationPropertyBinding Path="Items" Target="SalesOrderItems"/>
+				</EntitySet>
+				<EntitySet Name="SalesOrderItems" EntityType="ZSALESORDERSV4.SalesOrderItem"/>
+			</EntityContainer>
+
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>
