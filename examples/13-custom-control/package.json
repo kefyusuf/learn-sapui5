@@ -1,0 +1,19 @@
+{
+  "name": "ui5-learn-13-custom-control",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Example 13 - Custom control: a RatingIndicator with metadata, renderer, events and two-way binding",
+  "scripts": {
+    "start": "ui5 serve --port 8095 -o index.html",
+    "ts-typecheck": "tsc --noEmit",
+    "build": "ui5 build --clean-dest --dest dist",
+    "test": "node ../../scripts/test-headless.mjs 13",
+    "lint": "ui5lint -q"
+  },
+  "devDependencies": {
+    "@sapui5/types": "1.152.0",
+    "@ui5/cli": "4.0.65",
+    "typescript": "6.0.3",
+    "ui5-tooling-transpile": "3.13.1"
+  }
+}

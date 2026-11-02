@@ -18,8 +18,9 @@ Work through the examples **in order** - each one uses only what the previous on
 | 10 | [odata-v4](../examples/10-odata-v4/README.md) | Sales orders on V4 | OData V4 model, `$`-prefixed options, async-first, full CRUD journeys | 2-3h |
 | 11 | [flexible-column-layout](../examples/11-flexible-column-layout/README.md) | Orders master-detail on FCL | `sap.f.FlexibleColumnLayout`, the no-routing pattern, three columns, V4 update/delete, `Context.setProperty`/`delete` | 3-4h |
 | 12 | [message-manager](../examples/12-message-manager/README.md) | The intake form that talks back | `handleValidation`, `sap.ui.core.Messaging`, MessagePopover, two-way bound transient create | 2h |
+| 13 | [custom-control](../examples/13-custom-control/README.md) | Rate this order | Writing a `Control`: metadata, renderer, `onclick`, events, two-way write-back, clamping in the mutator | 2h |
 
-Total: roughly 5-6 focused days to the end of the path.
+Total: roughly 6-7 focused days to the end of the path.
 
 ## After each example
 

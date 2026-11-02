@@ -1,0 +1,26 @@
+<mvc:View controllerName="learn.rating.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc"
+		  xmlns:r="learn.rating.control">
+
+	<App>
+		<Page id="page" title="{i18n>page.title}">
+			<content>
+				<VBox class="sapUiSmallMargin">
+					<Title text="{i18n>rate.title}" level="H3" />
+					<!-- The CUSTOM control: the xmlns maps to the module
+					     namespace learn.rating.control (resource-roots in
+					     index.html). value binds two-way against the JSON
+					     model created in the controller's onInit. -->
+					<r:RatingIndicator id="rating"
+									   value="{/rating}"
+									   rate="onRate"
+									   class="sapUiSmallMarginBottom" />
+					<Text id="ratingText" text="You rated {/rating} / 5" />
+				</VBox>
+			</content>
+		</Page>
+	</App>
+
+</mvc:View>

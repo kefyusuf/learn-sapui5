@@ -1,0 +1,17 @@
+/* Example 13 - the RatingIndicator's stars. The renderer writes spans
+   with the lrStar class; the value property decides which get lrOn. */
+.lrStar {
+	cursor: pointer;
+	font-size: 1.6rem;
+	color: #c8c8c8;
+	padding: 0 0.15rem;
+	user-select: none;
+}
+
+.lrStar::before {
+	content: "\2605"; /* the BLACK STAR character */
+}
+
+.lrStar.lrOn {
+	color: #e6a700;
+}

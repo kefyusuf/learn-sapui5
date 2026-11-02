@@ -47,7 +47,8 @@ const TARGETS = [
 	{ prefix: "09", dir: "09-fiori-elements-products", port: 8089 },
 	{ prefix: "10", dir: "10-odata-v4", port: 8092 },
 	{ prefix: "11", dir: "11-flexible-column-layout", port: 8093 },
-	{ prefix: "12", dir: "12-message-manager", port: 8094 }
+	{ prefix: "12", dir: "12-message-manager", port: 8094 },
+	{ prefix: "13", dir: "13-custom-control", port: 8095 }
 ];
 
 const filter = process.argv[2];
