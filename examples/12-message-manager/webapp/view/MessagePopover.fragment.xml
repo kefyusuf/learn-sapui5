@@ -1,0 +1,11 @@
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core">
+	<!-- items bind the MessageManager's message model (named "message",
+	     set on the view in onInit). controller: this - M16. -->
+	<MessagePopover id="messagePopover" items="{message>/}">
+		<MessageItem title="{message>message}"
+					 subtitle="{message>additionalText}"
+					 type="{message>type}"
+					 description="{message>description}" />
+	</MessagePopover>
+</core:FragmentDefinition>

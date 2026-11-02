@@ -13,6 +13,9 @@
     "start:07": "npm run start --workspace examples/07-crud-leave-request",
     "start:08": "npm run start --workspace examples/08-real-odata-northwind",
     "start:09": "npm run start --workspace examples/09-fiori-elements-products",
+    "start:10": "npm run start --workspace examples/10-odata-v4",
+    "start:11": "npm run start --workspace examples/11-flexible-column-layout",
+    "start:12": "npm run start --workspace examples/12-message-manager",
     "test": "node scripts/test-headless.mjs",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run ts-typecheck --workspaces --if-present"

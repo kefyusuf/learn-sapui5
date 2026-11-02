@@ -1,0 +1,27 @@
+<core:FragmentDefinition xmlns="sap.m"
+						 xmlns:core="sap.ui.core">
+	<!-- The dialog's binding context is the TRANSIENT context created by
+	     ODataListBinding.create() - the two-way bindings write straight
+	     into it. Total is Edm.Decimal: typing a non-number raises a parse
+	     exception that handleValidation routes into the MessageManager. -->
+	<Dialog id="newOrderDialog"
+			title="{i18n>neworder.title}"
+			contentWidth="22rem">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<Label text="{i18n>neworder.id}" labelFor="newOrderId" />
+				<Text id="newOrderId" text="{ID}" />
+
+				<Label text="{i18n>neworder.customer}" labelFor="customerInput" />
+				<Input id="customerInput" value="{Customer}" />
+
+				<Label text="{i18n>neworder.total}" labelFor="totalInput" />
+				<Input id="totalInput" value="{Total}" />
+			</VBox>
+		</content>
+		<buttons>
+			<Button id="cancelOrder" text="{i18n>neworder.cancel}" press="onCancelOrder" />
+			<Button id="saveOrder" text="{i18n>neworder.save}" type="Emphasized" press="onSaveOrder" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

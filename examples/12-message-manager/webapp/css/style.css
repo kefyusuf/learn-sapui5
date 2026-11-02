@@ -1,0 +1,8 @@
+/* The height chain: html -> body -> ComponentContainer -> XML view -> Page. */
+html, body {
+	height: 100%;
+}
+
+.sapUiComponentContainer .sapUiView {
+	height: 100%;
+}
