@@ -5,7 +5,7 @@ How tests run in this repo, and the git workflow that goes with them: **RED → 
 ## Test stack (deliberately minimal)
 
 - **QUnit 2** - ships inside the UI5 runtime itself (`/resources/sap/ui/thirdparty/qunit-2.js`). No test framework download needed.
-- **Headless Chrome** - the runner in `scripts/test-headless.mjs` starts `ui5 serve` for each example, loads the QUnit page in headless Chrome and parses the rendered results. `npm test` from the repo root runs everything; `node scripts/test-headless.mjs 03` runs one example.
+- **Headless Chrome** - the runner in `scripts/test-headless.mjs` starts `ui5 serve` for each example, loads the QUnit page in headless Chrome and parses the rendered results. `npm test` from the repo root runs everything; `node scripts/test-headless.mjs 03` runs one example. For failed pages it also prints the **failing assertion details** and the **console errors**; before starting a server it refuses to run when the port already answers (a zombie `ui5 serve` from a crashed run would serve stale in-memory state - [M21](09-common-mistakes.md)).
 
 Why not Karma? karma-ui5 boots the full UI5 project graph inside Karma and stalled on this setup. The dump-and-parse runner uses exactly the same technique as the manual browser verification - one moving part, zero extra dependencies. If you prefer Karma/`ui5-test-runner`, the test pages work unchanged (they are plain QUnit 2 pages).
 
@@ -87,6 +87,27 @@ The example 03 journey found **M15** on its first run: the save button it was su
 - **Inject async preloaded state directly**: the controller preloads the i18n bundle fire-and-forget in `onInit` - tests inject the fake bundle straight onto the private field instead of racing the promise.
 - **Runner**: QUnit briefly reports "0 tests completed" while late-registered journeys load - the runner only accepts a non-zero test count as completion.
 
+### OPA5 lessons from the FCL and MessageManager rounds (examples 11/12)
+
+- **`ColumnListItem` defaults to `type="Inactive"`** - inactive rows swallow presses, so `itemPress` never fires and the OPA `Press` completes silently. Rows you tap for navigation need `type="Active"` ([M17](09-common-mistakes.md); example 11's third-column flow).
+- **With `controlType`, OPA passes ALL candidates into `check` at once** - `oRow.getCells()` inside a check throws (`getCells is not a function`) even though the controls exist. The per-control filter is a **matcher function**: `matchers: oRow => oRow.getCells()[0].getText() === ...` ([M18](09-common-mistakes.md)). Rule of thumb: `id` + `check` (one control) vs. `controlType` + `matchers` (filter per control).
+- **`MessageBox.error` renders a single "Close" button in this UI5 version** - not "OK" (`confirm` renders OK/Cancel). Match the text the version actually renders, or the journey times out while the dialog is right there (example 12).
+- **A modal dialog blocks presses behind it** - OPA refuses with `hidden behind a blocking popup` (the `Interactable` matcher). Design the journey around the top layer: press the dialog's own buttons, or close it first, then press the page control (example 12's bell press had to move after the dialog close).
+- **The MessagePopover is assertable** with `controlType: "sap.m.MessagePopover"` + a matcher on `getItems().length` - messages bound from the message model appear as real items.
+- **The message model drives the count badge** app-side: a formatter binding on `message>/` (see example 12) - there is no `attachMessageChange` on the 1.152 `Messaging` facade.
+
+## Diagnosing a red journey: the playbook that worked
+
+The delete-flow round (example 11) failed for three stacked reasons and each was found by a different tool - in this order:
+
+1. **Read the assertion detail.** The runner prints the failed *assertion* text (`li.fail li.fail`), not just the test name - `Did not find the monitor row...` vs `Refresh on this binding is not supported` are different bugs living in the same red test.
+2. **Read the console errors.** The runner captures `console.error` from the page (i18n locale noise filtered). Silent failures - a rejected view-creation promise, a missing module - leave exactly one trace there.
+3. **Instrument the code under test.** A temporary `console.error` in the handler answers "was it even called, and with what?" faster than any breakpoint in a headless run. The runner prints it.
+4. **Go to the network.** `node scripts/diag-network.mjs <port>` opens the OPA page headless (the journeys autostart on the page), captures every V4 request and **decodes the `$batch` MIME payloads**. This is what proved the DELETE was sent and answered `204 No Content` while `Context.delete()`'s promise never settled ([M20](09-common-mistakes.md)) - no theory survives that evidence.
+5. **Suspect the environment last, then seriously.** When failures do not match the code at all, check whether the port already answers: a zombie `ui5 serve` serves its own mutated mock state ([M21](09-common-mistakes.md)). Diagnosed by serving the same workspace on a different port and diffing the responses - the fresh server returned the deleted entity, the zombie did not.
+
+The same playbook found the example 12 lessons: the blocking-popup rule (step 1 - the OPA log names the exact control), the "Close" button (step 3 - dumping the button texts from inside a matcher), and the `sap/m/header.js` load error (step 2).
+
 ## Fiori Elements (example 09): open research item
 
 Testing the FE List Report with standalone OPA5 **does not work yet** - documented so the next attempt starts from the evidence:
@@ -121,7 +142,7 @@ Two findings, documented for the next attempt at automating it:
 Example 11 (FlexibleColumnLayout) went through three variants; the finding is documented so the pattern choice is informed:
 
 - **Routing-based** (`sap.f.routing.Router` + the FCL): the Master view never populated in headless runs — the target placement stalled silently (beginPages 0, no console errors), across manifest v1/v2 shapes and route-level layouts.
-- **The working variant: FCL WITHOUT routing** — the App controller places the Master view (`XMLView.create` + `addBeginColumnPage`), attaches to the table's `selectionChange` and drives the Detail view + the layout switches manually. **Green in headless real-time** (the OPA journey passes).
+- **The working variant: FCL WITHOUT routing** — the App controller places the Master view (`XMLView.create` + `addBeginColumnPage`), attaches to the table's `selectionChange` and drives the Detail view + the layout switches manually. **Green in headless real-time** (the OPA journey passes). The same pattern now drives all three columns (item detail in the end column) and the update/delete flows - four journeys total, all green.
 - The trade-off: no deep-linking via the hash (the FCL state is controller-managed) — acceptable for this teaching example; the routing-based FCL remains the pattern for FE apps (where the framework handles it).
 
 The runner's smoke mode + the 11 target were added during this investigation.
