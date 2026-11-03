@@ -9,7 +9,8 @@ import { join } from "node:path";
 
 const CHROME = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const PORT = process.argv[2] || "8094";
-const URL_TO_OPEN = `http://localhost:${PORT}/test/integration/opaTests.qunit.html`;
+const PATH_TO_OPEN = process.argv[3] || "/test/integration/opaTests.qunit.html";
+const URL_TO_OPEN = `http://localhost:${PORT}${PATH_TO_OPEN}`;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -59,21 +60,71 @@ ws.onmessage = (ev) => {
 	const o = JSON.parse(ev.data);
 	if (o.method === "Network.responseReceived") {
 		const r = o.params.response;
-		if (r.url.includes("ZSALESORDERSV4") && !r.url.includes("$metadata")) {
+		// the V4 requests (the original purpose) plus the page's own
+		// scripts - a boot that silently dies is visible there
+		if ((r.url.includes("ZSALESORDERSV4") && !r.url.includes("$metadata")) ||
+			/\.js(\?|$)/.test(r.url)) {
 			reqs.push({ reqId: o.params.requestId, line: `${r.status} ${decodeURIComponent(r.url).slice(0, 180)}` });
 		}
 	}
-	if (o.method === "Runtime.consoleAPICalled" && o.params.type === "error") {
+	if (o.method === "Log.entryAdded") {
+		const e = o.params.entry;
+		const t = `${e.level} ${(e.url ?? e.source?.url ?? "").replace(/^https?:\/\/[^/]+/, "")} ${e.text}`.replace(/\s+/g, " ").slice(0, 250);
+		if (!/fallback locale/.test(t)) console.log("LOG:", t);
+	}
+	if (o.method === "Runtime.exceptionThrown") {
+		const d = o.params.exceptionDetails;
+		const t = `${d.text} ${d.exception?.description ?? ""}`.replace(/\s+/g, " ").slice(0, 300);
+		console.log("EXCEPTION:", t);
+	}
+	if (o.method === "Runtime.consoleAPICalled" &&
+		(o.params.type === "error" || o.params.type === "info" || o.params.type === "warning")) {
 		const t = o.params.args.map((a) => a.value ?? a.description ?? "").join(" ").replace(/\s+/g, " ").slice(0, 250);
-		if (!/fallback locale/.test(t) && !/TEMP items dump/.test(t)) console.log("CONSOLE:", t);
+		if (!/fallback locale/.test(t) && !/TEMP items dump/.test(t)) {
+			console.log(`CONSOLE(${o.params.type}):`, t);
+		}
 	}
 };
 
 ws.send(JSON.stringify({ id: ++id, method: "Network.enable" }));
 ws.send(JSON.stringify({ id: ++id, method: "Runtime.enable" }));
-ws.send(JSON.stringify({ id: ++id, method: "Page.navigate", params: { url: URL_TO_OPEN } }));
+ws.send(JSON.stringify({ id: ++id, method: "Log.enable" }));
+ws.send(JSON.stringify({ id: ++id, method: "Page.enable" }));
+const oNav = await send("Page.navigate", { url: URL_TO_OPEN }).catch((e) => ({ error: String(e) }));
+console.log("NAV:", JSON.stringify(oNav.result ?? oNav).slice(0, 200));
 
-await sleep(75000);
+await sleep(45000);
+
+// boot-state probe: what actually happened in the page?
+	const oProbe = await send("Runtime.evaluate", {
+		expression: `(async () => {
+		const oBase = {
+			href: location.href,
+			innerText: document.body ? document.body.innerText.replace(/\\s+/g, " ").slice(0, 400) : null,
+			genericTiles: document.querySelectorAll(".sapMGT").length,
+			ui5Loaded: typeof sap !== "undefined",
+			container: typeof sap !== "undefined" && typeof sap.ushell !== "undefined" && typeof sap.ushell.Container !== "undefined"
+		};
+		try {
+			if (!oBase.container) { return JSON.stringify(oBase); }
+			// the tile component creation is async and SLOW in the shell -
+			// poll the DOM for the GenericTile before concluding
+			let iWaited = 0;
+			while (document.querySelectorAll(".sapMGT").length === 0 && iWaited < 60000) {
+				await new Promise((r) => setTimeout(r, 3000));
+				iWaited += 3000;
+			}
+			oBase.genericTiles = document.querySelectorAll(".sapMGT").length;
+			oBase.innerText = document.body ? document.body.innerText.replace(/\\s+/g, " ").slice(0, 400) : null;
+			return JSON.stringify(oBase);
+		} catch (e) { return JSON.stringify(Object.assign(oBase, { launchPageError: String(e) })); }
+	})()`,
+		returnByValue: true,
+		awaitPromise: true
+	}).catch(() => null);
+console.log("--- boot state ---");
+console.log(oProbe?.result?.result?.value ?? "(probe failed)");
+
 console.log("--- V4 requests seen ---");
 for (const r of reqs) {
 	console.log(r.line);

@@ -17,6 +17,7 @@
     "start:11": "npm run start --workspace examples/11-flexible-column-layout",
     "start:12": "npm run start --workspace examples/12-message-manager",
     "start:13": "npm run start --workspace examples/13-custom-control",
+    "start:14": "npm run start --workspace examples/14-flp-sandbox",
     "test": "node scripts/test-headless.mjs",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run ts-typecheck --workspaces --if-present"

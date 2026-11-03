@@ -34,6 +34,7 @@ Ports 8081-8087 and 8089-8090 serve examples 01-09 (08 runs on 8090 - port 8088 
 | [11](examples/11-flexible-column-layout/README.md) | flexible-column-layout | Orders master-detail on FCL | FlexibleColumnLayout, no-routing pattern, three columns, V4 update/delete | mocked (V4) |
 | [12](examples/12-message-manager/README.md) | message-manager | The intake form that talks back | handleValidation, Messaging, MessagePopover, transient create | mocked (V4) |
 | [13](examples/13-custom-control/README.md) | custom-control | Rate this order | Writing a Control: metadata, renderer, events, two-way write-back | local |
+| [14](examples/14-flp-sandbox/README.md) | flp-sandbox | The app as a launchpad tile | Local FLP shell via the CDM bootstrap, site schema, CI smoke | local |
 
 Start at 01 and go in order - each example only uses what the previous ones taught. Full roadmap and time estimates: [docs/11-learning-path.md](docs/11-learning-path.md).
 

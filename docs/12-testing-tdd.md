@@ -128,14 +128,15 @@ For now, FE apps in this repo are verified by the manual headless technique: CDP
 - **`no-globals` in XML views** (examples 03/07): binding `type: 'sap.ui.model.type.Float'` references the global `sap` - fixed with `core:require` on the control (`core:require="{ FloatType: 'sap/ui/model/type/Float' }"` + `type: 'FloatType'`).
 - **`no-removed-manifest-property`** (example 05): `routing.config.async` no longer exists in manifest v2 (routing is always async) - removed, navigation journeys re-verified.
 
-## FLP sandbox (launchpad integration): works in browsers, headless polling open
+## FLP sandbox (example 14): the CDM boot works headless - the classic-homepage tile host remains open
 
-Example 07 ships a **local FLP sandbox** (`webapp/test/flpSandbox.html`): it boots the real launchpad shell via the **CDM bootstrap** (`sap/ushell/bootstrap/cdm.js` - the classic `sandbox.js` was removed in UI5 1.152) and renders the app as a tile on the home page (`services.LaunchPage.adapter.config.applications`). Verified by rendering it in headless Chrome with virtual-time dumps (shell + tile + app consistent across runs) - **open it in your browser and click the tile**.
+The local FLP sandbox went from "stalls silently" to **verified by a CI smoke test** (example 14, `marker: "My Apps"` - the runner's first smoke gate). The findings, in order of discovery:
 
-Two findings, documented for the next attempt at automating it:
-
-- In **real-time headless** runs the CDM boot stalls silently (empty body, no console errors) - virtual time fast-forwards whatever event chain real browsers complete; the CDM boot-task order needs investigation.
-- The runner has a generic **smoke mode** (`smoke: { page, marker }` - polls the rendered body text) ready for the sandbox once the headless stall is resolved. It is deliberately **not** wired into CI for the sandbox yet.
+- **The silent stall had a cause**: `sap/ushell/bootstrap/cdm.js` drives a cascade of script loads whose FIRST step requests `/resources/ui5loader-dbg.js` - which this runtime does not ship. `cdm.js`'s `loadScripts()` counts that 404 as an error and **never fires its callback**: the cascade dies silently (empty body, zero console errors). The same stall hits example 07's sandbox - it "works in browsers" only because a real dev runtime ships the dbg variants. Diagnosed with `scripts/diag-network.mjs` (network + Log domain + a boot-state probe) after the runner's smoke mode reported an empty body with zero console errors.
+- **The fix: replicate the cascade with the files that exist** - the standard bootstrap with `data-sap-ui-autoboot="false"`, then `sap.ui.require(["sap/ushell/bootstrap/cdm/cdm-def-dev"])`, then an explicit `Core.boot()` (see example 14's `test/flpSandbox.html`).
+- **The CDM site schema** (read out of `CommonDataModelAdapter`, `LaunchPageAdapter` and `readHome`): the site data goes INLINE via `services.CommonDataModel.adapter.config.siteData`; groups read `identification.title` (NOT `title`); tiles reference apps by **`appId` on the tile itself**; the app descriptor is manifest-style (`sap.app.crossNavigation.inbounds` + `sap.ui5.componentName` + `sap.platform.runtime.componentProperties`) and its inbound NEEDS `deviceTypes` - **without deviceTypes the tile is dropped by the form-factor check, silently (an INFO log, invisible to console.error)**.
+- **The remaining gap**: the shell boots, navigates to `#Shell-home` and renders the site's GROUPS headless. The **tile host does not render** - the whole chain (`LaunchPageAdapter` V2, `AnchorNavigationBar`, `DashboardGroupsContainer`, the classic homepage) is `@deprecated "together with the classic homepage"` in 1.152. The tile's applauncher component even gets created; the deprecated host does not place it. Closing that means migrating the sandbox to the modern home renderer - a separate round.
+- The **smoke gate** (`marker: "My Apps"` - the site's group title) proves in CI: the CDM config parsed, the site loaded, the groups resolved and rendered.
 
 ## FCL (example 11): the routing-based variant stalls — the no-routing pattern works
 

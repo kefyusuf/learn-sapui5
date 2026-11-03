@@ -19,6 +19,7 @@ Work through the examples **in order** - each one uses only what the previous on
 | 11 | [flexible-column-layout](../examples/11-flexible-column-layout/README.md) | Orders master-detail on FCL | `sap.f.FlexibleColumnLayout`, the no-routing pattern, three columns, V4 update/delete, `Context.setProperty`/`delete` | 3-4h |
 | 12 | [message-manager](../examples/12-message-manager/README.md) | The intake form that talks back | `handleValidation`, `sap.ui.core.Messaging`, MessagePopover, two-way bound transient create | 2h |
 | 13 | [custom-control](../examples/13-custom-control/README.md) | Rate this order | Writing a `Control`: metadata, renderer, `onclick`, events, two-way write-back, clamping in the mutator | 2h |
+| 14 | [flp-sandbox](../examples/14-flp-sandbox/README.md) | The app as a launchpad tile | Local FLP shell via the CDM bootstrap, the CDM site schema, the silent-cascade trap, CI smoke verification | 1-2h |
 
 Total: roughly 6-7 focused days to the end of the path.
 
