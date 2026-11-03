@@ -1,6 +1,6 @@
 {
   "name": "learn-sapui5",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Learn SAP UI5 by doing: progressive TypeScript examples with real-life scenarios, common mistakes, and documentation.",
   "scripts": {

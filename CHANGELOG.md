@@ -2,6 +2,30 @@
 
 All notable changes to this repository are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/) with an opinionated twist: the entries tell the **learning story** (what a UI5 learner gains at each step), not just the diff.
 
+## [1.2.0] - 2026-11-03
+
+The third milestone: two examples that push past the app itself - **into the launchpad shell** and **into metadata-driven forms**. The mistakes catalog reaches **M01-M22**, and CI gains its **first smoke gate**.
+
+### Examples (the learning path continues)
+
+- **14 flp-sandbox** - the app as a launchpad tile: a local Fiori launchpad shell boots the app via the **CDM bootstrap**, and a **CI smoke test** verifies the shell boot headlessly (the runner's first smoke gate). The round's real content: the "silent CDM stall" **solved** - cdm.js's cascade dies on a missing `ui5loader-dbg.js` (empty body, zero console errors), fixed by replicating the cascade with the files that exist; the CDM site schema read out of the ushell sources (`identification.title`, `appId` on the tile, manifest-style app descriptors, `deviceTypes` or the tile is dropped silently). The classic-homepage tile host remains an open, documented gap (deprecated without successor in 1.152).
+- **15 smart-controls** - the form that builds itself: `SmartForm`/`SmartField` reading the OData `$metadata` (a DatePicker for `Edm.DateTime`, validated Decimal inputs) - **on OData V2**, where the classic smart controls live. The round proves the **V4 pivot**: the classic SmartField's factory calls the V2 meta-model API and on V4 renders labels with NO inputs (a convincing illusion of a working form); on V4 the successor is `sap.ui.mdc`.
+
+### Mistakes catalog (M22)
+
+- **M22** - XML namespace prefixes are case-sensitive: `xmlns:smartfield` declared, `<smartField:SmartField>` used - the parser rejects the view with `prefix is unbound` and no JavaScript error anywhere. Also documented: prefixed aggregation tags parse as CONTROLS (`<smartform:content>` → `sap/ui/comp/smartform/content.js` 404).
+
+### Testing
+
+- **The first CI smoke gate**: the runner's generic smoke mode verifies the FLP shell boot in headless Chrome.
+- `scripts/diag-network.mjs` upgrades: navigation logging (an MSYS-mangled URL silently probed about:blank), the Log domain + `Runtime.exceptionThrown` capture, INFO/WARNING console capture, an async boot-state probe - the tools that cracked the FLP round.
+- CI hardening: headless Chrome gets 30s to expose the DevTools websocket (a cold runner's first launch exceeded the previous 10s).
+
+### Fixed (found by the tests)
+
+- The forgotten M08 lesson re-learned: the V2 mock must start in `allJourneys.js` - an OPA page does not run index.html; the symptom was a fully rendered form with every field empty.
+- M18 re-confirmed: with matchers, OPA `success` receives ONE control - counting goes in the `check` (the all-candidates rule).
+
 ## [1.1.0] - 2026-11-02
 
 The second milestone: three more examples (11-13) complete the freestyle arc - the modern master-detail pattern, the app that talks back, and the first hand-written control. The mistakes catalog grows to **M01-M21**, and the headless runner becomes a debugging instrument.
