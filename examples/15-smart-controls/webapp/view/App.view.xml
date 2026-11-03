@@ -1,0 +1,53 @@
+<mvc:View controllerName="learn.smart.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc"
+		  xmlns:smartform="sap.ui.comp.smartform"
+		  xmlns:smartField="sap.ui.comp.smartfield"
+>
+
+	<App>
+		<Page id="page" title="{i18n>form.title}">
+			<content>
+				<VBox class="sapUiSmallMargin">
+					<!-- The metadata-driven form: bound to the FIRST order via
+					     the element binding; the SmartFields build themselves
+					     from the $metadata (types, labels, validation). -->
+					<!-- The SmartForm structure: Group > GroupElement > SmartField.
+					     Group and GroupElement are CONTROLS (not aggregation tags)
+					     - they land in the default aggregations, which avoids the
+					     prefixed aggregation-tag parsing quirks entirely. -->
+					<smartform:SmartForm id="orderForm"
+										 entitySet="SalesOrderSet"
+										 editable="true">
+						<smartform:Group id="orderGroup" title="{i18n>form.title}">
+							<smartform:GroupElement id="customerElement" label="{i18n>field.customer}">
+								<smartField:SmartField id="customerField"
+													   entitySet="SalesOrderSet"
+													   property="Customer"
+													   value="{Customer}" />
+							</smartform:GroupElement>
+							<smartform:GroupElement id="dateElement" label="{i18n>field.date}">
+								<smartField:SmartField id="dateField"
+													   entitySet="SalesOrderSet"
+													   property="OrderDate"
+													   value="{OrderDate}" />
+							</smartform:GroupElement>
+							<smartform:GroupElement id="totalElement" label="{i18n>field.total}">
+								<smartField:SmartField id="totalField"
+													   entitySet="SalesOrderSet"
+													   property="Total"
+													   value="{Total}" />
+							</smartform:GroupElement>
+						</smartform:Group>
+					</smartform:SmartForm>
+
+					<Toolbar class="sapUiSmallMarginTop">
+						<Button id="saveButton" text="{i18n>form.save}" type="Emphasized" press="onSave" />
+					</Toolbar>
+				</VBox>
+			</content>
+		</Page>
+	</App>
+
+</mvc:View>

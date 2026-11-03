@@ -35,6 +35,7 @@ Ports 8081-8087 and 8089-8090 serve examples 01-09 (08 runs on 8090 - port 8088 
 | [12](examples/12-message-manager/README.md) | message-manager | The intake form that talks back | handleValidation, Messaging, MessagePopover, transient create | mocked (V4) |
 | [13](examples/13-custom-control/README.md) | custom-control | Rate this order | Writing a Control: metadata, renderer, events, two-way write-back | local |
 | [14](examples/14-flp-sandbox/README.md) | flp-sandbox | The app as a launchpad tile | Local FLP shell via the CDM bootstrap, site schema, CI smoke | local |
+| [15](examples/15-smart-controls/README.md) | smart-controls | The form that builds itself | SmartForm/SmartField on OData V2, metadata-driven fields | mocked (V2) |
 
 Start at 01 and go in order - each example only uses what the previous ones taught. Full roadmap and time estimates: [docs/11-learning-path.md](docs/11-learning-path.md).
 
@@ -61,7 +62,7 @@ When an error message looks familiar, look it up there first.
 | [06-freestyle-vs-fiori-elements](docs/06-freestyle-vs-fiori-elements.md) | Choosing the app architecture |
 | [07-typescript-in-ui5](docs/07-typescript-in-ui5.md) | The TS setup and its traps |
 | [08-debugging](docs/08-debugging.md) | Console, network tab, Diagnostics window |
-| [09-common-mistakes](docs/09-common-mistakes.md) | **The catalog: M01-M21** |
+| [09-common-mistakes](docs/09-common-mistakes.md) | **The catalog: M01-M22** |
 | [10-glossary](docs/10-glossary.md) | SAP jargon decoded (RAP, CAP, CDS, FLP...) |
 | [11-learning-path](docs/11-learning-path.md) | Roadmap with time estimates |
 | [12-testing-tdd](docs/12-testing-tdd.md) | QUnit harness, TDD cycle, branch → commit → PR workflow |

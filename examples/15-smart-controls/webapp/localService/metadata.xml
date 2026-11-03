@@ -1,0 +1,52 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" Version="1.0">
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="1.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZSALESORDERS_SRV">
+
+			<EntityType Name="SalesOrder">
+				<Key>
+					<PropertyRef Name="ID"/>
+				</Key>
+				<Property Name="ID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Customer" Type="Edm.String" MaxLength="80"/>
+				<Property Name="OrderDate" Type="Edm.DateTime"/>
+				<Property Name="Status" Type="Edm.String" MaxLength="20"/>
+				<Property Name="Total" Type="Edm.Decimal" Precision="13" Scale="2"/>
+				<NavigationProperty Name="Items" Relationship="ZSALESORDERS_SRV.SalesOrder_Items" FromRole="FromRole_SalesOrder" ToRole="ToRole_SalesOrderItem"/>
+			</EntityType>
+
+			<EntityType Name="SalesOrderItem">
+				<Key>
+					<PropertyRef Name="ItemID"/>
+				</Key>
+				<Property Name="ItemID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="OrderID" Type="Edm.String" MaxLength="10"/>
+				<Property Name="Product" Type="Edm.String" MaxLength="40"/>
+				<Property Name="Quantity" Type="Edm.Int32"/>
+				<Property Name="Price" Type="Edm.Decimal" Precision="13" Scale="2"/>
+			</EntityType>
+
+			<Association Name="SalesOrder_Items">
+				<End Type="ZSALESORDERS_SRV.SalesOrder" Role="FromRole_SalesOrder" Multiplicity="1"/>
+				<End Type="ZSALESORDERS_SRV.SalesOrderItem" Role="ToRole_SalesOrderItem" Multiplicity="*"/>
+				<ReferentialConstraint>
+					<Principal Role="FromRole_SalesOrder">
+						<PropertyRef Name="ID"/>
+					</Principal>
+					<Dependent Role="ToRole_SalesOrderItem">
+						<PropertyRef Name="OrderID"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+
+			<EntityContainer Name="ZSALESORDERS_SRV_Entities" m:IsDefaultEntityContainer="true">
+				<EntitySet Name="SalesOrderSet" EntityType="ZSALESORDERS_SRV.SalesOrder"/>
+				<EntitySet Name="SalesOrderItemSet" EntityType="ZSALESORDERS_SRV.SalesOrderItem"/>
+				<AssociationSet Name="SalesOrder_Items_AssocSet" Association="ZSALESORDERS_SRV.SalesOrder_Items">
+					<End EntitySet="SalesOrderSet" Role="FromRole_SalesOrder"/>
+					<End EntitySet="SalesOrderItemSet" Role="ToRole_SalesOrderItem"/>
+				</AssociationSet>
+			</EntityContainer>
+
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>
