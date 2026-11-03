@@ -20,8 +20,9 @@ Work through the examples **in order** - each one uses only what the previous on
 | 12 | [message-manager](../examples/12-message-manager/README.md) | The intake form that talks back | `handleValidation`, `sap.ui.core.Messaging`, MessagePopover, two-way bound transient create | 2h |
 | 13 | [custom-control](../examples/13-custom-control/README.md) | Rate this order | Writing a `Control`: metadata, renderer, `onclick`, events, two-way write-back, clamping in the mutator | 2h |
 | 14 | [flp-sandbox](../examples/14-flp-sandbox/README.md) | The app as a launchpad tile | Local FLP shell via the CDM bootstrap, the CDM site schema, the silent-cascade trap, CI smoke verification | 1-2h |
+| 15 | [smart-controls](../examples/15-smart-controls/README.md) | The form that builds itself | SmartForm/SmartField on OData V2, metadata-driven fields, the V2 mock server, XML prefix + aggregation-tag traps | 2h |
 
-Total: roughly 6-7 focused days to the end of the path.
+Total: roughly 7-8 focused days to the end of the path.
 
 ## After each example
 

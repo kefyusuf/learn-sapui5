@@ -459,6 +459,23 @@ if (await get(`http://localhost:${t.port}/`)) {
 
 ---
 
+## M22 - XML view prefix mismatch: `Element ... prefix is unbound`
+
+**Symptom:** the view renders PARTIALLY or not at all, and the page shows an XML parser error like `error on line 26 at column 34: Element smartField:SmartField prefix is unbound`. No JavaScript error anywhere - the failure is in the XML layer.
+
+**Cause:** the XML namespace declaration and the tag usage disagree in CASE. The declaration was `xmlns:smartfield="sap.ui.comp.smartfield"` but the tags said `<smartField:SmartField>` (capital F) - `smartField` was never declared, so the XML parser rejects the document. XML prefixes are case-sensitive; JavaScript identifiers trained you not to care.
+
+**Fixed:**
+```xml
+<mvc:View xmlns:smartField="sap.ui.comp.smartfield">
+    <smartField:SmartField ... />
+</mvc:View>
+```
+
+**Lesson:** the namespace PREFIX is arbitrary but must match EXACTLY between the declaration and every usage - case included. Found in example 15 (a sed-generated view renamed one letter). Related: M18 (the OPA lesson about the same "everything looks fine" feeling).
+
+---
+
 ## Quick reference: error → mistake
 
 | Error fragment | Mistake |
@@ -483,3 +500,4 @@ if (await get(`http://localhost:${t.port}/`)) {
 | **`Failed to read path /...` on every dialog open** | **M19** |
 | **row stays after DELETE; `Refresh on this binding is not supported`** | **M20** |
 | **tests pass/fail against data that is not in the mock files** | **M21** |
+| **`Element ... prefix is unbound` - view parses partially** | **M22** |

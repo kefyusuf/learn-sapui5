@@ -55,7 +55,8 @@ const TARGETS = [
 		// the CDM boot + the site's group render (the classic-homepage
 		// TILE host has its own open gap - see docs/12)
 		smoke: { page: "test/flpSandbox.html", marker: "My Apps" }
-	}
+	},
+	{ prefix: "15", dir: "15-smart-controls", port: 8097 }
 ];
 
 const filter = process.argv[2];

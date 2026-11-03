@@ -1,0 +1,9 @@
+[
+	{ "ItemID": "I-0010", "OrderID": "SO-1001", "Product": "Laser Mouse Pro", "Quantity": 10, "Price": "129.50" },
+	{ "ItemID": "I-0011", "OrderID": "SO-1001", "Product": "Ergo Keyboard XL", "Quantity": 20, "Price": "89.00" },
+	{ "ItemID": "I-0012", "OrderID": "SO-1001", "Product": "External SSD 1TB", "Quantity": 10, "Price": "129.00" },
+	{ "ItemID": "I-0020", "OrderID": "SO-1002", "Product": "27\" 4K Monitor", "Quantity": 2, "Price": "449.00" },
+	{ "ItemID": "I-0030", "OrderID": "SO-1003", "Product": "Webcam FHD+", "Quantity": 15, "Price": "79.90" },
+	{ "ItemID": "I-0031", "OrderID": "SO-1003", "Product": "Cable Organizer Set", "Quantity": 24, "Price": "12.50" },
+	{ "ItemID": "I-0040", "OrderID": "SO-1004", "Product": "Noise-Cancel Headset", "Quantity": 1, "Price": "219.00" }
+]

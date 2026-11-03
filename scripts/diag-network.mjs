@@ -106,17 +106,15 @@ await sleep(45000);
 			container: typeof sap !== "undefined" && typeof sap.ushell !== "undefined" && typeof sap.ushell.Container !== "undefined"
 		};
 		try {
-			if (!oBase.container) { return JSON.stringify(oBase); }
-			// the tile component creation is async and SLOW in the shell -
-			// poll the DOM for the GenericTile before concluding
-			let iWaited = 0;
-			while (document.querySelectorAll(".sapMGT").length === 0 && iWaited < 60000) {
-				await new Promise((r) => setTimeout(r, 3000));
-				iWaited += 3000;
-			}
-			oBase.genericTiles = document.querySelectorAll(".sapMGT").length;
-			oBase.innerText = document.body ? document.body.innerText.replace(/\\s+/g, " ").slice(0, 400) : null;
-			return JSON.stringify(oBase);
+			// the SmartField's own view: editable? inner control? value?
+			const oField = sap.ui.getCore().byId("__component0---appView--customerField");
+			const oFieldInfo = oField ? {
+				editable: oField.getEditable?.(),
+				innerControl: oField.getControl ? (oField.getControl()?.getMetadata()?.getName() ?? "empty") : "no getControl",
+				value: String(oField.getValue?.() ?? ""),
+				dataAvailable: oField.dataAvailable?.()
+			} : "smart field not found";
+			return JSON.stringify(Object.assign(oBase, { field: oFieldInfo }));
 		} catch (e) { return JSON.stringify(Object.assign(oBase, { launchPageError: String(e) })); }
 	})()`,
 		returnByValue: true,
