@@ -106,7 +106,8 @@ async function runPage(url, sMode, sMarker) {
 	});
 
 	try {
-		for (let i = 0; i < 100 && !wsUrl; i++) {
+		// cold CI runners can take a while to start Chrome - 30s of grace
+		for (let i = 0; i < 300 && !wsUrl; i++) {
 			await new Promise((r) => setTimeout(r, 100));
 		}
 		if (!wsUrl) throw new Error("Chrome did not expose the DevTools websocket");
