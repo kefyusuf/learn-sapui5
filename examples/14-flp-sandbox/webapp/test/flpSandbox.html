@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FLP Sandbox - Task Overview</title>
+
+	<!-- The local FLP sandbox for the freestyle app (CDM config, UI5 1.152).
+
+	     WHY NOT JUST <script src=".../sap/ushell/bootstrap/cdm.js">?
+	     cdm.js drives a cascade of script loads; its FIRST step requests
+	     /resources/ui5loader-dbg.js - which this runtime does NOT ship.
+	     cdm.js's loadScripts() counts that 404 as an error and the
+	     callback never fires: the cascade dies SILENTLY (empty body, zero
+	     console errors - the headless stall documented in docs/12). The
+	     same stall hits example 07's sandbox, which only "works in
+	     browsers" because a real dev runtime ships the dbg variants.
+
+	     The fix: replicate the cascade with the files that DO exist -
+	     the standard bootstrap (autoboot off), then the CDM definition
+	     module, then an explicit Core.boot(). -->
+	<script>
+		window["sap-ushell-config"] = {
+			defaultRenderer: "fiori2",
+			services: {
+				CommonDataModel: {
+					adapter: {
+						config: {
+							// the CDM SITE, inline - the CommonDataModelAdapter
+							// accepts siteData / siteDataUrl / siteDataPromise;
+							// inline keeps the sandbox a single file. The shape
+							// mirrors the real FLP content model (site ->
+							// groups -> tiles -> visualizations -> targets).
+							siteData: {
+								site: {
+									siteId: "local-site",
+									payload: { groupsOrder: ["myGroup"] }
+								},
+								groups: {
+									myGroup: {
+										id: "myGroup",
+										identification: { title: "My Apps" },
+										payload: {
+											isPreset: true,
+											tiles: [ { id: "tileTaskOverview", appId: "appTaskOverview" } ]
+										}
+									}
+								},
+								visualizations: {
+									vizTaskOverview: {
+										id: "vizTaskOverview",
+										type: "visualization",
+										vizType: "SAPUI5",
+										displayName: "Task Overview",
+										payload: {
+											"sap.flp": {
+												appId: "appTaskOverview",
+												title: "Task Overview",
+												subTitle: "",
+												icon: "sap-icon://task"
+											}
+										}
+									}
+								},
+								applications: {
+									// a manifest-style descriptor: the inbound makes the
+									// app navigable, the technology + componentProperties
+									// tell the shell how to load it
+									appTaskOverview: {
+										"sap.app": {
+											id: "learn.flp",
+											title: "Task Overview",
+											crossNavigation: {
+												inbounds: {
+													"taskOverview-display": {
+														semanticObject: "TaskOverview",
+														action: "display",
+														title: "Task Overview",
+														// WITHOUT this the tile is filtered out by the
+														// form-factor check - silently (an INFO log)
+														deviceTypes: { desktop: true, tablet: true, phone: true },
+														signature: { parameters: {} }
+													}
+												}
+											}
+										},
+										"sap.ui": { technology: "UI5" },
+										"sap.ui5": { componentName: "learn.flp" },
+										"sap.platform.runtime": {
+											componentProperties: {
+												name: "learn.flp",
+												url: "../"
+											}
+										}
+									}
+								},
+								catalogs: {}
+							}
+						}
+					}
+				}
+			}
+		};
+	</script>
+	<script id="sap-ui-bootstrap"
+			src="/resources/sap-ui-core.js"
+			data-sap-ui-resource-roots='{
+				"learn.flp": "../"
+			}'
+			data-sap-ui-theme="sap_horizon"
+			data-sap-ui-compat-version="edge"
+			data-sap-ui-libs="sap.m"
+			data-sap-ui-async="true"
+			data-sap-ui-autoboot="false"></script>
+
+	<!-- cascade step 4+5 of cdm.js, with the dbg-only steps removed -->
+	<script>
+		sap.ui.require(["sap/ushell/bootstrap/cdm/cdm-def-dev"], function () {
+			sap.ui.require(["sap/ui/core/Core"], function (Core) {
+				Core.boot();
+			});
+		});
+	</script>
+</head>
+<body class="sapUiBody">
+	<!-- The CDM renderer places the shell into #canvas directly - without
+	     this div, ShellLayout.applyLayout crashes on a null element. -->
+	<div id="canvas"></div>
+</body>
+</html>

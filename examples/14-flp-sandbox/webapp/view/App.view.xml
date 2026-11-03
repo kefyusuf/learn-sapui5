@@ -1,0 +1,17 @@
+<mvc:View controllerName="learn.flp.controller.App"
+		  displayBlock="true"
+		  xmlns="sap.m"
+		  xmlns:mvc="sap.ui.core.mvc">
+
+	<App>
+		<Page id="page" title="{i18n>page.title}">
+			<content>
+				<VBox class="sapUiSmallMargin">
+					<Title text="{i18n>hello.title}" level="H3" />
+					<Text text="{i18n>hello.text}" />
+				</VBox>
+			</content>
+		</Page>
+	</App>
+
+</mvc:View>

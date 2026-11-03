@@ -48,7 +48,14 @@ const TARGETS = [
 	{ prefix: "10", dir: "10-odata-v4", port: 8092 },
 	{ prefix: "11", dir: "11-flexible-column-layout", port: 8093 },
 	{ prefix: "12", dir: "12-message-manager", port: 8094 },
-	{ prefix: "13", dir: "13-custom-control", port: 8095 }
+	{ prefix: "13", dir: "13-custom-control", port: 8095 },
+	{
+		prefix: "14", dir: "14-flp-sandbox", port: 8096,
+		// the freestyle FLP sandbox, headless-verified for the first time:
+		// the CDM boot + the site's group render (the classic-homepage
+		// TILE host has its own open gap - see docs/12)
+		smoke: { page: "test/flpSandbox.html", marker: "My Apps" }
+	}
 ];
 
 const filter = process.argv[2];
@@ -99,7 +106,8 @@ async function runPage(url, sMode, sMarker) {
 	});
 
 	try {
-		for (let i = 0; i < 100 && !wsUrl; i++) {
+		// cold CI runners can take a while to start Chrome - 30s of grace
+		for (let i = 0; i < 300 && !wsUrl; i++) {
 			await new Promise((r) => setTimeout(r, 100));
 		}
 		if (!wsUrl) throw new Error("Chrome did not expose the DevTools websocket");
@@ -274,6 +282,7 @@ for (const t of targets) {
 				if (!oPage.smokeHit) anyFailed = true;
 				console.log(`  ${oPage.smokeHit ? "PASS" : "FAIL"}: marker "${e.marker}" ${oPage.smokeHit ? "found" : "never appeared"}`);
 				if (!oPage.smokeHit && oPage.diagText) console.log(`    page text: ${oPage.diagText}`);
+				if (!oPage.smokeHit) for (const c of oPage.consoleErrors) console.log(`    console.error: ${c}`);
 			} else {
 				const r = parseResults(oPage);
 				if (!r.run || !r.passed) anyFailed = true;
