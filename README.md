@@ -2,20 +2,20 @@
 
 [![CI](https://github.com/kefyusuf/learn-sapui5/actions/workflows/ci.yml/badge.svg)](https://github.com/kefyusuf/learn-sapui5/actions/workflows/ci.yml)
 
-A hands-on learning repository for **complete UI5 beginners**: 9 progressively harder, fully working **TypeScript** applications, each built around a real-life business scenario - plus a catalog of the mistakes everyone actually makes (including the ones made while building this repo).
+A hands-on learning repository for **complete UI5 beginners**: **15 progressively harder, fully working TypeScript applications**, each built around a real-life business scenario - from a first boot chain, through OData V2/V4 CRUD, Fiori elements, the Flexible Column Layout and a hand-written custom control, up to smart metadata-driven forms and a **local Fiori launchpad shell**. Plus a catalog of **22 real mistakes** everyone actually makes - every entry occurred while building this repo, and every one was caught by a test first.
 
-**Verified**: every example runs, renders and passes `tsc --noEmit` on SAPUI5 **1.152** with Node 20+.
+**Verified continuously**: typecheck + ui5lint + **22 headless test pages** (unit, controller, OPA5 journeys, a launchpad smoke gate) run on **every pull request** - SAPUI5 **1.152**, Node 20+ (CI verifies on Node 24).
 
 ## Quick start
 
 ```bash
 git clone <this-repo> && cd sapui5
-npm install          # one install for all 9 examples (npm workspaces)
+npm install          # one install for all 15 examples (npm workspaces)
 npm run start:01     # opens http://localhost:8081
-npm test             # headless QUnit suites (Chrome required)
+npm test             # headless QUnit/OPA5 suites (Chrome required)
 ```
 
-Ports 8081-8087 and 8089-8090 serve examples 01-09 (08 runs on 8090 - port 8088 can collide with local services on some Windows machines). `npm run typecheck` checks all examples.
+Each example serves on its own port (8081-8097; example 08 uses 8090 - port 8088 can collide with local services on some Windows machines). `npm run start:NN` prints the URL, `npm run typecheck` and `npm run lint` check all examples.
 
 ## The learning path
 
@@ -78,7 +78,7 @@ When an error message looks familiar, look it up there first.
 
 ## Contributing
 
-Found an error message that cost you hours? Add it to the catalog - [CONTRIBUTING.md](CONTRIBUTING.md) explains the format. PRs that keep every example runnable are always welcome.
+Found an error message that cost you hours? Add it to the catalog - [CONTRIBUTING.md](CONTRIBUTING.md) explains the format. PRs that keep every example runnable are always welcome. The versioned learning story of this repo lives in the [CHANGELOG](CHANGELOG.md).
 
 ## License
 
