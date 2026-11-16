@@ -10,6 +10,7 @@
 - **`onclick`**: the framework dispatches browser clicks to `on<event>` handlers on the control; `oEvent.target.dataset.rate` says which star was hit
 - **two-way write-back**: `setProperty` (never a raw field) fires the property change, so a bound model is updated — the same contract `sap.m`'s own controls follow
 - **Clamping lives in the overridden mutator**: the classic metadata has **no** `setter` option (a key named `setter` is silently ignored) — override `setValue` on the prototype; it is called by construction (`applySettings`), clicks and the two-way binding alike
+- **ARIA slider pattern** (a11y): a custom interactive control must carry its own semantics — the renderer writes `role="slider"`, `tabindex="0"` (focusability is what lets the keyboard reach `onkeydown`) and the `aria-value*` attributes; arrows/Home/End mirror the click path, and the host supplies the accessible name via the `labelText` property (a custom control cannot reach the host's i18n bundle)
 
 ## Run it
 
@@ -22,7 +23,8 @@ npm run start:13   # from the repository root
 1. The app model is a plain `JSONModel({ rating: 2 })` — the example is about the control layer, not OData.
 2. `<r:RatingIndicator value="{/rating}" rate="onRate" />` — the `xmlns:r` maps to the module namespace (resource-roots in `index.html`).
 3. Clicking a star: `onclick` → `_applyRate` → `setValue` (clamped) → `setProperty` → the model gets the new value → `fireRate` → the controller shows a toast.
-4. The label `You rated {/rating} / 5` re-renders from the model.
+4. The keyboard does the same through `onkeydown` (arrows step, Home/End bound) — the control is a focusable ARIA slider.
+5. The label `You rated {/rating} / 5` re-renders from the model.
 
 ## Test split
 
@@ -44,4 +46,4 @@ npm run start:13   # from the repository root
 
 ## Tests
 
-Five QUnit unit tests (clamping, click path, two-way, rendering) + one OPA journey (the control inside the real app, two-way through the binding) — all headless-verified.
+Six QUnit unit tests (clamping, click path, keyboard path, two-way, rendering with the ARIA attributes) + one OPA journey (the control inside the real app, two-way through the binding) — all headless-verified.

@@ -5,7 +5,6 @@ import Input from "sap/m/Input";
 import DatePicker from "sap/m/DatePicker";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Select from "sap/m/Select";
-import Text from "sap/m/Text";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageToast from "sap/m/MessageToast";
 import MessageBox from "sap/m/MessageBox";

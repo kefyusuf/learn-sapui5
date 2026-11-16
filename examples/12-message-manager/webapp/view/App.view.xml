@@ -12,10 +12,13 @@
 							<Title text="{i18n>table.title}" level="H2" />
 							<ToolbarSpacer />
 							<Button id="newOrderButton" text="{i18n>neworder.button}" press="onNewOrder" />
+							<!-- icon-only button: the tooltip is hover-only, the
+							     accessible name is what the screen reader announces -->
 							<Button id="messageButton"
 									icon="sap-icon://message-popup"
 									text=""
 									tooltip="{i18n>messages.button.tooltip}"
+									accessibleName="{i18n>messages.button.tooltip}"
 									press="onMessagePopoverPress" />
 						</Toolbar>
 					</headerToolbar>
