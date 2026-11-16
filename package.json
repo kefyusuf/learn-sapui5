@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "private": true,
   "description": "Learn SAP UI5 by doing: progressive TypeScript examples with real-life scenarios, common mistakes, and documentation.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start:01": "npm run start --workspace examples/01-hello-world",
     "start:02": "npm run start --workspace examples/02-mvc-i18n",
