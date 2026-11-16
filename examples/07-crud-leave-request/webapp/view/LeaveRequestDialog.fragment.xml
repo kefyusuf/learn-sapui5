@@ -19,9 +19,9 @@
 					<Label text="{i18n>label.type}" labelFor="typeSelect" />
 					<Select id="typeSelect" selectedKey="Annual">
 						<items>
-							<core:Item key="Annual" text="Annual" />
-							<core:Item key="Sick" text="Sick" />
-							<core:Item key="Unpaid" text="Unpaid" />
+							<core:Item key="Annual" text="{i18n>type.Annual}" />
+							<core:Item key="Sick" text="{i18n>type.Sick}" />
+							<core:Item key="Unpaid" text="{i18n>type.Unpaid}" />
 						</items>
 					</Select>
 					<Label text="{i18n>label.start}" labelFor="startPicker" />
