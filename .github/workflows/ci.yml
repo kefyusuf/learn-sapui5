@@ -19,7 +19,7 @@ jobs:
       # ubuntu-latest images ship Google Chrome at this path.
       CHROME_BIN: /usr/bin/google-chrome
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v4
         with:
