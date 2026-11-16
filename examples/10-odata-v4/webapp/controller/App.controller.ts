@@ -10,6 +10,7 @@ import MessageBox from "sap/m/MessageBox";
 import MessageToast from "sap/m/MessageToast";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import JSONModel from "sap/ui/model/json/JSONModel";
+import type { ListBase$SelectionChangeEvent } from "sap/m/ListBase";
 import { formatter } from "learn/odatav4/model/formatter";
 
 /**
@@ -34,10 +35,8 @@ export default class AppController extends Controller {
 		this.getView()?.setModel(new JSONModel({ hasSelection: false }), "ui");
 	}
 
-	public onOrderSelected(oEvent: { getParameter(name: "listItem"): object | undefined }): void {
-		const oItem = oEvent.getParameter("listItem") as
-			| { getBindingContext(): { getPath(): string } | undefined }
-			| undefined;
+	public onOrderSelected(oEvent: ListBase$SelectionChangeEvent): void {
+		const oItem = oEvent.getParameter("listItem");
 		const sPath = oItem?.getBindingContext()?.getPath() ?? "";
 
 		// V4: query options are $-prefixed, and the expand keeps the relative

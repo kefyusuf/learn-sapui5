@@ -3,7 +3,7 @@ import Fragment from "sap/ui/core/Fragment";
 import Dialog from "sap/m/Dialog";
 import Input from "sap/m/Input";
 import CheckBox from "sap/m/CheckBox";
-import SearchField from "sap/m/SearchField";
+import type { SearchField$SearchEvent } from "sap/m/SearchField";
 import List from "sap/m/List";
 import ListBinding from "sap/ui/model/ListBinding";
 import Filter from "sap/ui/model/Filter";
@@ -11,7 +11,7 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageToast from "sap/m/MessageToast";
 import MessageBox from "sap/m/MessageBox";
-import ListItemBase from "sap/m/ListItemBase";
+import type { ListItemBase$PressEvent } from "sap/m/ListItemBase";
 import { formatter } from "learn/controls/model/formatter";
 
 interface Product {
@@ -65,8 +65,8 @@ export default class AppController extends Controller {
 		}));
 	}
 
-	public onSearch(oEvent: { getSource(): unknown }): void {
-		const sQuery = (oEvent.getSource() as SearchField).getValue();
+	public onSearch(oEvent: SearchField$SearchEvent): void {
+		const sQuery = oEvent.getSource().getValue();
 		// Filter the *binding*, not the model data. The list re-renders
 		// automatically - never rebuild the model on search.
 		const oList = this.byId("productList") as List;
@@ -74,8 +74,8 @@ export default class AppController extends Controller {
 		oBinding?.filter(new Filter("name", "Contains", sQuery));
 	}
 
-	public onProductPressed(oEvent: { getSource(): unknown }): void {
-		const oItem = oEvent.getSource() as ListItemBase;
+	public onProductPressed(oEvent: ListItemBase$PressEvent): void {
+		const oItem = oEvent.getSource();
 		const oProduct = oItem.getBindingContext()?.getObject() as Product | undefined;
 		MessageToast.show(oProduct ? `${oProduct.name} - ${oProduct.price} EUR` : "");
 	}

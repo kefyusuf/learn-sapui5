@@ -3,6 +3,7 @@ import UIComponent from "sap/ui/core/UIComponent";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import MessageBox from "sap/m/MessageBox";
 import History from "sap/ui/core/routing/History";
+import type { Route$PatternMatchedEvent } from "sap/ui/core/routing/Route";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { formatter } from "learn/routing/model/formatter";
 
@@ -36,7 +37,7 @@ export default class DetailController extends Controller {
 		);
 	}
 
-	public async onPatternMatched(oEvent: { getParameter(name: "arguments"): object | undefined }): Promise<void> {
+	public async onPatternMatched(oEvent: Route$PatternMatchedEvent): Promise<void> {
 		const oArgs = oEvent.getParameter("arguments") as { orderId: string } | undefined;
 		const sOrderId = oArgs?.orderId ?? "";
 		const oModel = this.getView()?.getModel() as JSONModel | undefined;

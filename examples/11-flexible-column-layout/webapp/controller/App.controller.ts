@@ -4,6 +4,7 @@ import FlexibleColumnLayout from "sap/f/FlexibleColumnLayout";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import Table from "sap/m/Table";
 import Button from "sap/m/Button";
+import type { ListBase$ItemPressEvent } from "sap/m/ListBase";
 import MessageBox from "sap/m/MessageBox";
 
 /**
@@ -79,7 +80,7 @@ export default class AppController extends Controller {
 	 */
 	private openItemDetail(
 		oFCL: FlexibleColumnLayout,
-		oEvent: { getParameter(sName: string): unknown }
+		oEvent: ListBase$ItemPressEvent
 	): void {
 		const oListItem = oEvent.getParameter("listItem") as
 			| { getBindingContext(): { getPath(): string } | undefined }
