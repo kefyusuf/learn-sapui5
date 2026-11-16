@@ -163,11 +163,13 @@ export default class AppController extends Controller {
 		}
 
 		// V2 update: model.update with success/error handlers - the refresh
-		// goes into success (docs/12).
+		// AND the dialog close go into success: on error the form stays open
+		// so the user can retry (docs/12).
 		const oModel = this.getView()?.getModel() as ODataModel;
 		oModel.update(oContext.getPath(), { Type: sNewType }, {
 			success: () => {
 				(oTable.getBinding("items") as ListBinding).refresh();
+				this.oDialog?.close();
 				MessageToast.show(this._text("updated.message",
 					[String(oContext.getProperty("ID"))]));
 			},
@@ -175,7 +177,6 @@ export default class AppController extends Controller {
 				MessageBox.error(oError.message ?? "Update failed");
 			}
 		});
-		this.oDialog?.close();
 	}
 
 	public onDeleteRequest(): void {
