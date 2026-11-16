@@ -25,7 +25,10 @@ const RatingIndicator = Control.extend("learn.rating.control.RatingIndicator", {
 		library: "learn.rating",
 		properties: {
 			value: { type: "int", defaultValue: 0 },
-			max: { type: "int", defaultValue: 5 }
+			max: { type: "int", defaultValue: 5 },
+			// A custom control cannot reach the host's i18n bundle itself -
+			// the view binds this text, the renderer turns it into aria-label.
+			labelText: { type: "string", defaultValue: "" }
 		},
 		events: {
 			rate: { allowPreventDefault: false, parameters: { value: "int" } }
@@ -47,8 +50,25 @@ const RatingIndicator = Control.extend("learn.rating.control.RatingIndicator", {
 		apiVersion: 2,
 
 		render: function (oRM: RenderManager, oRating: Element): void {
-			const oCtrl = oRating as unknown as { getValue(): number; getMax(): number };
-			oRM.openStart("div", oRating).openEnd();
+			const oCtrl = oRating as unknown as {
+				getValue(): number;
+				getMax(): number;
+				getLabelText(): string;
+			};
+			// ARIA slider pattern (what sap.m's own RatingIndicator does):
+			// role + focusability + value bounds. tabindex="0" is what lets
+			// the keyboard reach the control's onkeydown; the screen reader
+			// announces "name, slider, value" from aria-label + aria-valuenow.
+			oRM.openStart("div", oRating)
+				.attr("role", "slider")
+				.attr("tabindex", "0")
+				.attr("aria-valuemin", "0")
+				.attr("aria-valuemax", String(oCtrl.getMax()))
+				.attr("aria-valuenow", String(oCtrl.getValue()));
+			if (oCtrl.getLabelText()) {
+				oRM.attr("aria-label", oCtrl.getLabelText());
+			}
+			oRM.openEnd();
 			for (let i = 1; i <= oCtrl.getMax(); i++) {
 				oRM.openStart("span")
 					.attr("data-rate", String(i))
@@ -71,6 +91,36 @@ const RatingIndicator = Control.extend("learn.rating.control.RatingIndicator", {
 		const sRate = oEvent.target?.dataset?.rate;
 		if (sRate !== undefined) {
 			this._applyRate(Number(sRate));
+		}
+	},
+
+	// The keyboard leg of the slider pattern: arrows step, Home/End bound.
+	// The framework dispatches onkeydown like onclick - but only when the
+	// rendered DOM can hold focus, hence the renderer's tabindex="0".
+	onkeydown: function (this: {
+		getMax(): number;
+		getValue(): number;
+		_applyRate(iValue: number): void;
+	}, oEvent: { key?: string; preventDefault(): void }): void {
+		switch (oEvent.key) {
+			case "ArrowUp":
+			case "ArrowRight":
+				oEvent.preventDefault();
+				this._applyRate(this.getValue() + 1);
+				break;
+			case "ArrowDown":
+			case "ArrowLeft":
+				oEvent.preventDefault();
+				this._applyRate(this.getValue() - 1);
+				break;
+			case "Home":
+				oEvent.preventDefault();
+				this._applyRate(0);
+				break;
+			case "End":
+				oEvent.preventDefault();
+				this._applyRate(this.getMax());
+				break;
 		}
 	},
 

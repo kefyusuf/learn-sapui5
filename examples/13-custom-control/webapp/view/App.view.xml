@@ -15,6 +15,7 @@
 					     model created in the controller's onInit. -->
 					<r:RatingIndicator id="rating"
 									   value="{/rating}"
+									   labelText="{i18n>rate.aria}"
 									   rate="onRate"
 									   class="sapUiSmallMarginBottom" />
 					<Text id="ratingText" text="You rated {/rating} / 5" />

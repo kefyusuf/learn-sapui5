@@ -44,6 +44,30 @@ sap.ui.define([
 		oRating.destroy();
 	});
 
+	QUnit.test("the keyboard path mirrors the click path", function (assert) {
+		const oRating = new RatingIndicator({ value: 3, max: 5 });
+		let iFired = -1;
+		oRating.attachRate(function (oEvent) {
+			iFired = oEvent.getParameter("value");
+		});
+
+		// the framework routes real keydown DOM events to the control's
+		// onkeydown - the test feeds the same shape directly
+		oRating.onkeydown({ key: "ArrowUp", preventDefault: function () {} });
+		assert.strictEqual(oRating.getValue(), 4, "ArrowUp steps up");
+		assert.strictEqual(iFired, 4, "the rate event fires from the keyboard too");
+
+		oRating.onkeydown({ key: "Home", preventDefault: function () {} });
+		assert.strictEqual(oRating.getValue(), 0, "Home resets to zero");
+
+		oRating.onkeydown({ key: "End", preventDefault: function () {} });
+		assert.strictEqual(oRating.getValue(), 5, "End jumps to max");
+
+		oRating.onkeydown({ key: "ArrowDown", preventDefault: function () {} });
+		assert.strictEqual(oRating.getValue(), 4, "ArrowDown steps down");
+		oRating.destroy();
+	});
+
 	QUnit.test("two-way: the property change writes the bound model", function (assert) {
 		const oModel = new JSONModel({ rating: 0 });
 		const oRating = new RatingIndicator();
@@ -61,7 +85,7 @@ sap.ui.define([
 
 	QUnit.test("the renderer writes max star spans with the value on", function (assert) {
 		const done = assert.async();
-		const oRating = new RatingIndicator({ value: 2, max: 5 });
+		const oRating = new RatingIndicator({ value: 2, max: 5, labelText: "Your rating" });
 		oRating.placeAt("qunit-fixture");
 
 		// the rerender is scheduled - give the UIArea a real moment
@@ -72,6 +96,11 @@ sap.ui.define([
 			assert.strictEqual(oDom.querySelectorAll(".lrStar.lrOn").length, 2, "value stars highlighted");
 			assert.strictEqual(oDom.querySelectorAll(".lrStar")[3].getAttribute("data-rate"), "4",
 				"the star spans carry data-rate for the click path");
+			assert.strictEqual(oDom.getAttribute("role"), "slider", "the container exposes the slider role");
+			assert.strictEqual(oDom.getAttribute("tabindex"), "0", "focusable - this is what lets the keyboard reach onkeydown");
+			assert.strictEqual(oDom.getAttribute("aria-valuenow"), "2", "aria-valuenow mirrors the value");
+			assert.strictEqual(oDom.getAttribute("aria-label"), "Your rating",
+				"the host-provided labelText becomes the accessible name");
 			oRating.destroy();
 			done();
 		}, 100);
