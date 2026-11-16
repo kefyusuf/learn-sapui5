@@ -184,5 +184,8 @@ sap.ui.define([
 		assert.strictEqual(this.sUpdatePath, "/LeaveRequestSet('LR-0001')", "update on the selected path");
 		assert.strictEqual(this.oUpdateData.Type, "Annual", "the selected type is sent");
 		assert.strictEqual(this.oToast.callCount, 1, "toast shown");
+		// the fake model calls success synchronously - the dialog closes
+		// only AFTER the server confirmed, not before the round trip
+		assert.strictEqual(this.oDialog.close.callCount, 1, "dialog closed only after success");
 	});
 });

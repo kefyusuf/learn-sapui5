@@ -3,6 +3,7 @@ import Fragment from "sap/ui/core/Fragment";
 import Messaging from "sap/ui/core/Messaging";
 import Dialog from "sap/m/Dialog";
 import Button from "sap/m/Button";
+import type { Button$PressEvent } from "sap/m/Button";
 import Table from "sap/m/Table";
 import MessagePopover from "sap/m/MessagePopover";
 import MessageToast from "sap/m/MessageToast";
@@ -107,7 +108,7 @@ export default class AppController extends Controller {
 	}
 
 	public async onMessagePopoverPress(
-		oEvent: { getSource(): unknown }
+		oEvent: Button$PressEvent
 	): Promise<void> {
 		if (!this.oMessagePopover) {
 			this.oMessagePopover = (await Fragment.load({
@@ -117,7 +118,7 @@ export default class AppController extends Controller {
 			})) as MessagePopover;
 			this.getView()?.addDependent(this.oMessagePopover);
 		}
-		void this.oMessagePopover.toggle(oEvent.getSource() as Button);
+		void this.oMessagePopover.toggle(oEvent.getSource());
 	}
 
 	private _text(sKey: string, aArgs?: string[]): string | undefined {

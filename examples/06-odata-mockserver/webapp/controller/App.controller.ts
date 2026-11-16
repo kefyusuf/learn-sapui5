@@ -1,5 +1,6 @@
 import Controller from "sap/ui/core/mvc/Controller";
 import JSONModel from "sap/ui/model/json/JSONModel";
+import type { ListBase$SelectionChangeEvent } from "sap/m/ListBase";
 import { formatter } from "learn/odata/model/formatter";
 
 /**
@@ -23,8 +24,8 @@ export default class AppController extends Controller {
 		this.getView()?.setModel(new JSONModel({ selectedPath: "" }), "ui");
 	}
 
-	public onOrderSelected(oEvent: { getParameter(name: "listItem"): object | undefined }): void {
-		const oItem = oEvent.getParameter("listItem") as { getBindingContext(): { getPath(): string } | undefined };
+	public onOrderSelected(oEvent: ListBase$SelectionChangeEvent): void {
+		const oItem = oEvent.getParameter("listItem");
 		const sPath = oItem?.getBindingContext()?.getPath() ?? "";
 		// bindElement with $expand: one request fetches order + its items.
 		this.getView()?.bindElement(sPath, { expand: "Items" });

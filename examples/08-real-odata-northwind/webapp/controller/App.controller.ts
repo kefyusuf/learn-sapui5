@@ -1,5 +1,5 @@
 import Controller from "sap/ui/core/mvc/Controller";
-import SearchField from "sap/m/SearchField";
+import type { SearchField$SearchEvent } from "sap/m/SearchField";
 import Table from "sap/m/Table";
 import ListBinding from "sap/ui/model/ListBinding";
 import Filter from "sap/ui/model/Filter";
@@ -23,8 +23,8 @@ export default class AppController extends Controller {
 		return formatter.formatStockText(nStock, bDiscontinued);
 	}
 
-	public onSearch(oEvent: { getSource(): unknown }): void {
-		const sQuery = (oEvent.getSource() as SearchField).getValue();
+	public onSearch(oEvent: SearchField$SearchEvent): void {
+		const sQuery = oEvent.getSource().getValue();
 		// Client-side Contains filter on the data already fetched -
 		// server-side $filter would be the production choice (see README).
 		const oTable = this.byId("productsTable") as Table;
