@@ -63,10 +63,10 @@ export default class AppController extends Controller {
 			Total: "0.00"
 		});
 
-		void this._openDialog(sNewId);
+		void this._openDialog();
 	}
 
-	private async _openDialog(sNewId: string): Promise<void> {
+	private async _openDialog(): Promise<void> {
 		if (!this.oDialog) {
 			this.oDialog = (await Fragment.load({
 				name: "learn.v4messages.view.NewOrderDialog",

@@ -44,7 +44,6 @@ const ws = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej; });
 
 const reqs = [];
-const bodies = new Map();
 let id = 0;
 const send = (method, params = {}) => new Promise((res) => {
 	const i = ++id;

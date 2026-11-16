@@ -80,7 +80,7 @@ sap.ui.define(["sap/ui/test/Opa5", "sap/ui/test/actions/Press", "sap/ui/test/act
 				check: function (oList) {
 					return oList.getItems().some((oItem) => oItem.getTitle() === sName);
 				},
-				success: function (oList) {
+				success: function () {
 					Opa5.assert.ok(true, `catalog shows "${sName}"`);
 				},
 				errorMessage: `The catalog never showed "${sName}" after refresh`
