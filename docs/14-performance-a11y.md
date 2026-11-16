@@ -58,6 +58,12 @@ UI5 does the heavy lifting **by default** - the controls ship with ARIA roles, k
 - Chrome DevTools → Accessibility panel: inspect the ARIA tree of any running example.
 - SAP's a11y statement template + the Fiori a11y guidelines are the acceptance criteria for production apps.
 
+### 6. Where the framework can't help: custom controls and icon-only buttons
+
+- **Icon-only buttons need `accessibleName`**: the bell button in example 12 carries only an icon and a dynamic count - the screen reader announces the name from `accessibleName`, never from the tooltip (tooltips are hover-only).
+- **Custom controls must carry their own semantics**: example 13's `RatingIndicator` renders raw DOM, so its renderer writes the ARIA slider pattern itself - `role="slider"`, `tabindex="0"` (focusability is what lets the keyboard reach the control's `onkeydown`), `aria-valuemin/max/now`, and an `aria-label` fed by a `labelText` property the host binds from i18n (a custom control cannot reach the host's bundle). The keyboard path (arrows, Home/End) mirrors the click path.
+- **Titled dialogs need no extra `ariaLabelledBy`**: per the SDK (Dialogs, Popups, and Popovers - Titles and Labels), the `title` names the dialog; `ariaLabelledBy` is for dialogs WITHOUT a visible title or for an extra announced description - and it must reference a RENDERED control (an invisible control produces no DOM to point at).
+
 ## Rule of thumb
 
 **Performance**: fetch less, load lazily, bundle once. **A11y**: label everything, use semantic states, trust the framework's keyboard handling - and test with the accessibility panel, not your eyes.
