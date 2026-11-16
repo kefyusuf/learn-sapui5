@@ -57,7 +57,7 @@ sap.ui.define([
 				check: function (oSmartField) {
 					try {
 						return String(oSmartField.getValue() ?? "") === sValue;
-					} catch (e) {
+					} catch {
 						return false;
 					}
 				},

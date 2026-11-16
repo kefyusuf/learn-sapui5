@@ -1,0 +1,14 @@
+# Dependency update automation. npm workspaces: pointing at the root
+# directory covers the 15 example package.json files against the root
+# lockfile (one PR per dependency, touching all workspaces at once).
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

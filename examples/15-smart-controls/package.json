@@ -2,7 +2,7 @@
   "name": "ui5-learn-15-smart-controls",
   "version": "1.0.0",
   "private": true,
-  "description": "Example 15 - Smart controls: the form that builds itself from OData metadata (SmartForm + SmartField on V4)",
+  "description": "Example 15 - Smart controls: the form that builds itself from OData metadata (SmartForm + SmartField on V2)",
   "scripts": {
     "start": "ui5 serve --port 8097 -o index.html",
     "ts-typecheck": "tsc --noEmit",
