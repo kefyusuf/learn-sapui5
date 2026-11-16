@@ -2,6 +2,33 @@
 
 All notable changes to this repository are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/) with an opinionated twist: the entries tell the **learning story** (what a UI5 learner gains at each step), not just the diff.
 
+## [1.2.1] - 2026-11-16
+
+The maintenance release: an **industry-norms review** of the whole repo turned into four PRs. The gates got stronger, the CI got faster - and the review itself taught the two best lessons: one finding was a false positive the repo's own gate caught (ui5lint rejects `rootView.async` under manifest v2: async view creation is the *only* mode there), and one was corrected against the SDK docs (titled dialogs don't need `ariaLabelledBy`).
+
+### CI & tooling
+
+- `npm ci` replaces `npm install` in CI - the build installs exactly what `package-lock.json` pins; a `concurrency` group cancels superseded runs on the same PR.
+- **Dependabot** now watches npm (workspaces-aware) and the GitHub Actions ecosystem.
+- The Actions are upgraded (checkout v7 / setup-node v7 / upload-artifact v7) **and pinned by commit SHA** - supply-chain hardening with the version as a comment. Side effect: the Node-20-deprecation annotation is gone and CI dropped from ~5m12s to ~3m44s.
+- **ESLint 10 + typescript-eslint 8** join ui5lint: `npm run lint` is now the umbrella (ui5lint per workspace + eslint repo-wide). The first pass found five real findings - including an unused import typecheck misses (tsc's `noUnusedLocals` is off; the two gates cover different blind spots). `.editorconfig` codifies the existing style (tabs for code, spaces for npm/YAML) with no reformatting. Prettier was deliberately NOT introduced: its defaults would reformat the tab-indented codebase wholesale.
+- The root `package.json` declares `engines: node >= 20` (npm can now warn on mismatches, matching what the README always said).
+
+### Accessibility (the code, not just the docs)
+
+- Example 12's icon-only bell button gets an `accessibleName` - the tooltip is hover-only, the screen reader announces the accessible name.
+- Example 13's custom `RatingIndicator` now implements the full **ARIA slider pattern**: `role="slider"`, `tabindex="0"` (focusability is what lets the keyboard reach the control's `onkeydown`), `aria-valuemin/max/now`, and an accessible name fed by a host-bound `labelText` property (a custom control cannot reach the host's i18n bundle). Arrows step, Home/End bound - and a new unit test verifies the keyboard path plus the rendered ARIA attributes.
+- The dialog lesson recorded honestly (docs/14, section 6): per the SDK, a titled dialog's `title` names it for the screen reader; `ariaLabelledBy` is for title-less dialogs or an extra announced description, and must reference a rendered control.
+
+### Types
+
+- The framework event handlers in 8 controllers carry the real event types from `@sapui5/types` (`ListBase$SelectionChangeEvent`, `ListItemBase$PressEvent`, `SearchField$SearchEvent`, `Button$PressEvent`, `Route$PatternMatchedEvent`, ...) instead of inline structural signatures - the redundant body casts disappear where the type already knows the answer (`getSource()` on a `SearchField$SearchEvent` IS the SearchField). ex 13's `onRate` keeps its structural signature deliberately: the classic `Control.extend` pipeline generates no event typings.
+
+### Fixed
+
+- Example 07: the edit dialog closes only AFTER `model.update` succeeds - on error the form stays open so the user can retry; the unit test asserts the ordering. The Annual/Sick/Unpaid Select texts go through i18n (the last hardcoded user-facing strings in the repo).
+- Example 15: the package description says **V2** - the app was pivoted to V2 in the 1.2.0 line; the example README already was.
+
 ## [1.2.0] - 2026-11-03
 
 The third milestone: two examples that push past the app itself - **into the launchpad shell** and **into metadata-driven forms**. The mistakes catalog reaches **M01-M22**, and CI gains its **first smoke gate**.
