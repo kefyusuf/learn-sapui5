@@ -1,0 +1,26 @@
+# Matches the existing style of the repo: code files (TS/JS/XML/manifest)
+# are tab-indented (4), npm and YAML files are space-indented (2).
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+indent_size = 4
+
+[**/package.json]
+indent_style = space
+indent_size = 2
+
+[**/package-lock.json]
+indent_style = space
+indent_size = 2
+
+[**.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[**.md]
+indent_style = space
+indent_size = 2
