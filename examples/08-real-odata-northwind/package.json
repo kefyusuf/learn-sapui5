@@ -14,6 +14,6 @@
     "@ui5/cli": "4.0.65",
     "typescript": "6.0.3",
     "ui5-middleware-simpleproxy": "3.9.0",
-    "ui5-tooling-transpile": "3.13.1"
+    "ui5-tooling-transpile": "3.14.1"
   }
 }
